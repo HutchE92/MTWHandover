@@ -280,13 +280,10 @@
     });
   }
 
-  /**
-   * Yes / No segmented control.
-   * `positive` inverts the colour semantics: for "MUST completed", yes is the
-   * reassuring answer, whereas for "risk of falls" yes is the alerting one.
-   */
-  function yesNo(pid, role, field, value, positive) {
-    const wrap = el('div', { class: 'yn' + (positive ? ' yn--positive' : '') });
+  /** Yes / No segmented control. The selected answer is marked in blue
+      regardless of which it is — see the note in handover.css. */
+  function yesNo(pid, role, field, value) {
+    const wrap = el('div', { class: 'yn' });
     for (const v of ['yes', 'no']) {
       const label = el('label', { class: `yn__opt yn__opt--${v}` });
       label.appendChild(el('input', {
@@ -393,13 +390,12 @@
   function nutritionCell(p) {
     const td = el('td');
     const notes = store.notes(p.id);
-    const on = notes.fluidRestriction === 'yes';
 
-    const fluid = el('div', { class: 'nut__fluid' + (on ? ' nut__fluid--on' : '') });
+    const fluid = el('div', { class: 'nut__fluid' });
     fluid.appendChild(el('span', {
       class: 'nut__q', text: 'Is the patient currently on fluid restrictions?',
     }));
-    fluid.appendChild(yesNo(p.id, 'fluid', 'fluidRestriction', notes.fluidRestriction, false));
+    fluid.appendChild(yesNo(p.id, 'fluid', 'fluidRestriction', notes.fluidRestriction));
     td.appendChild(fluid);
 
     td.appendChild(textarea(p.id, 'nutrition', 'Diet, assistance, supplements, SALT input…'));
@@ -411,8 +407,8 @@
     const r = store.risk(p.id);
     const box = el('div', { class: 'ra' });
 
-    const row = (label, control, overdue) => {
-      const div = el('div', { class: 'ra__row' + (overdue ? ' ra__row--overdue' : '') });
+    const row = (label, control) => {
+      const div = el('div', { class: 'ra__row' });
       div.appendChild(el('span', { class: 'ra__label', text: label }));
       div.appendChild(control);
       return div;
@@ -426,8 +422,8 @@
       spellcheck: true,
     })));
 
-    box.appendChild(row(RISK_LABELS.falls, yesNo(p.id, 'riskyn', 'falls', r.falls, false)));
-    box.appendChild(row(RISK_LABELS.must, yesNo(p.id, 'riskyn', 'must', r.must, true)));
+    box.appendChild(row(RISK_LABELS.falls, yesNo(p.id, 'riskyn', 'falls', r.falls)));
+    box.appendChild(row(RISK_LABELS.must, yesNo(p.id, 'riskyn', 'must', r.must)));
 
     /* Taken and due are one paired fact, so they share a single row side by
        side rather than taking a labelled sub-row each. */

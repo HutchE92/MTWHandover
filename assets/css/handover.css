@@ -284,7 +284,7 @@
   display: inline-flex;
   align-items: center;
   cursor: pointer;
-  font-size: 11px;
+  font-size: var(--editable);
   font-weight: 600;
   color: var(--ink-soft);
   padding: 3px 11px;
@@ -293,15 +293,17 @@
 }
 .yn__opt + .yn__opt { border-left: 1px solid var(--line); }
 .yn__opt input { position: absolute; opacity: 0; pointer-events: none; }
-.yn__opt:hover { background: #f0f4f7; }
+.yn__opt:hover { background: var(--blue-pale); }
 
-.yn__opt--yes:has(input:checked) { background: var(--red);   color: #fff; }
-.yn__opt--no:has(input:checked)  { background: var(--green); color: #fff; }
+/* The selected answer is marked in the palette's own blue, whichever it is.
+   Red/green traffic-lighting read as imported from another design system —
+   and the alerting answers already surface as flags in Patient Details. */
+.yn__opt:has(input:checked) {
+  background: var(--blue);
+  color: #fff;
+  font-weight: 700;
+}
 .yn__opt:has(input:focus-visible) { box-shadow: inset 0 0 0 2px var(--blue-bright); }
-
-/* Inverted semantics: "yes" is the reassuring answer (e.g. MUST completed) */
-.yn--positive .yn__opt--yes:has(input:checked) { background: var(--green); }
-.yn--positive .yn__opt--no:has(input:checked)  { background: var(--amber); }
 
 .fieldNote { font-size: 10.5px; color: var(--ink-faint); margin-top: 3px; }
 
@@ -309,21 +311,22 @@
 
 .nut__q {
   display: block;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--editable);
+  font-weight: 600;
   color: var(--ink-soft);
   margin-bottom: 4px;
   line-height: 1.3;
 }
 
+/* A quiet neutral panel, not a coloured state indicator — the selected chip
+   carries the answer, and Patient Details carries the alert. */
 .nut__fluid {
   padding: 7px 8px;
   margin-bottom: 7px;
-  background: var(--lilac-pale);
-  border: 1px solid var(--lilac-line);
+  background: var(--canvas);
+  border: 1px solid var(--line-soft);
   border-radius: var(--radius);
 }
-.nut__fluid--on { background: var(--red-pale); border-color: #f0b8b3; }
 
 /* --- Risk assessments ----------------------------------------------------- */
 
@@ -344,9 +347,6 @@
 
 .ra__row .ta { min-height: 36px; }
 .ra__row .dt { width: 100%; }
-
-.ra__row--overdue .ra__label { color: var(--red); }
-.ra__row--overdue .dt { border-color: var(--red); background: var(--red-pale); }
 
 /* MRSA taken / due sit side by side — one paired fact, one row. */
 .ra__split { display: grid; grid-template-columns: 1fr 1fr; gap: 0 6px; }
