@@ -35,6 +35,11 @@
 
   --radius: 7px;
 
+  /* One size for every editable value on the board — free text, dates, the
+     add-task field and task descriptions — so nothing reads as larger than
+     anything else the user can change. */
+  --editable: 10.5px;
+
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -237,7 +242,7 @@
   width: 100%;
   min-height: 54px;
   font: inherit;
-  font-size: 11.5px;
+  font-size: var(--editable);
   color: var(--ink);
   padding: 6px 7px;
   border: 1px solid transparent;
@@ -260,7 +265,7 @@
 
 .dt {
   font: inherit;
-  font-size: 10.5px;
+  font-size: var(--editable);
   color: var(--ink);
   padding: 3px 5px;
   border: 1px solid var(--line);
@@ -336,7 +341,7 @@
   margin-bottom: 4px;
 }
 
-.ra__row .ta { min-height: 36px; font-size: 10.5px; }
+.ra__row .ta { min-height: 36px; }
 .ra__row .dt { width: 100%; }
 
 .ra__row--overdue .ra__label { color: var(--red); }
@@ -344,18 +349,18 @@
 
 /* --- Tasks ---------------------------------------------------------------- */
 
-.tk { display: flex; flex-direction: column; gap: 6px; }
+.tk { display: flex; flex-direction: column; gap: 5px; }
 
-.tk__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.tk__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
 
 .tk__item {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 3px 7px;
-  padding: 6px 7px;
+  gap: 0 6px;
+  padding: 3px 6px;
   border: 1px solid var(--line);
   border-left: 3px solid var(--lilac);
-  border-radius: var(--radius);
+  border-radius: 5px;
   background: transparent;
 }
 /* Urgency is carried by the left accent and the due-date text alone — filled
@@ -365,9 +370,9 @@
 
 .tk__check {
   appearance: none;
-  width: 15px;
-  height: 15px;
-  margin: 1px 0 0;
+  width: 13px;
+  height: 13px;
+  margin: 2px 0 0;
   border: 1.5px solid var(--ink-faint);
   border-radius: 4px;
   background: #fff;
@@ -380,20 +385,20 @@
   border-color: var(--green);
 }
 
-.tk__text { font-size: 12px; line-height: 1.35; }
-.tk__meta { grid-column: 2; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.tk__text { font-size: var(--editable); line-height: 1.3; }
+.tk__meta { grid-column: 2; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 
-.tk__due { font-size: 10.5px; color: var(--ink-faint); }
+.tk__due { font-size: 10px; color: var(--ink-faint); }
 .tk__due--overdue { color: var(--red); font-weight: 700; }
 .tk__due--today   { color: var(--amber); font-weight: 700; }
 
 .tk__status {
   font: inherit;
-  font-size: 10.5px;
+  font-size: 10px;
   color: var(--ink-soft);
   border: 1px solid var(--line);
   border-radius: 20px;
-  padding: 1px 7px;
+  padding: 0 4px;
   background: #fff;
   cursor: pointer;
 }
@@ -416,7 +421,7 @@
 }
 .tk__add input[type="text"] {
   font: inherit;
-  font-size: 10.5px;
+  font-size: var(--editable);
   padding: 4px 7px;
   border: 1px solid var(--line);
   border-radius: 5px;
