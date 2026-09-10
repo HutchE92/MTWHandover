@@ -53,29 +53,10 @@
         </header>
 
         <div class="hv__scroll">
+          <!-- Columns and header are built from the COLUMNS list in app.js. -->
           <table class="hv__table">
-            <colgroup>
-              <col class="col-patient">
-              <col class="col-dx">
-              <col class="col-nursing">
-              <col class="col-tasks">
-              <col class="col-nutrition">
-              <col class="col-risk">
-              <col class="col-therapy">
-              <col class="col-discharge">
-            </colgroup>
-            <thead>
-              <tr>
-                <th scope="col">Patient Details</th>
-                <th scope="col">Diagnosis &amp; Past Medical History</th>
-                <th scope="col">Additional Nursing Information</th>
-                <th scope="col">Tasks</th>
-                <th scope="col">Nutrition</th>
-                <th scope="col">Risk Assessments</th>
-                <th scope="col">Therapy Plans</th>
-                <th scope="col">Discharge Plans</th>
-              </tr>
-            </thead>
+            <colgroup id="cols"></colgroup>
+            <thead><tr id="head"></tr></thead>
             <tbody id="rows"></tbody>
           </table>
         </div>
@@ -108,23 +89,6 @@
       <button type="button" class="modal__x" data-close aria-label="Close">&times;</button>
     </header>
     <div class="modal__body" id="handoverBody"></div>
-    <footer class="modal__foot">
-      <button type="button" class="btn btn--primary" data-close>Close</button>
-    </footer>
-  </div>
-</dialog>
-
-<!-- Task history: completed tasks -->
-<dialog class="modal" id="taskModal">
-  <div class="modal__inner">
-    <header class="modal__head">
-      <div>
-        <h2 id="taskTitle">Task History</h2>
-        <div class="modal__sub" id="taskSub"></div>
-      </div>
-      <button type="button" class="modal__x" data-close aria-label="Close">&times;</button>
-    </header>
-    <div class="modal__body" id="taskBody"></div>
     <footer class="modal__foot">
       <button type="button" class="btn btn--primary" data-close>Close</button>
     </footer>

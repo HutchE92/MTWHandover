@@ -4,14 +4,13 @@ window.HV_CONFIG = {
      previously saved demo state. */
   /* Must differ from Option A's key: both variants are served from the same
      origin, so a shared key would let entries and audit history bleed between
-     them. */
-  storageKey: 'mtw-handover-poc-b-v1',
+     them. Bumped to v2 when the columns were restructured — the stored shape
+     changed, so earlier saved state must not be reloaded. */
+  storageKey: 'mtw-handover-poc-b-v2',
 
   /* Work-area insets as percentages of the background image. Kept here as well
      as in shell.css so the Shift+A alignment overlay can report them. */
   region: { left: 0.70, top: 23.18, right: 0.90, bottom: 6.49 },
-
-  taskStatuses: ['Outstanding', 'In progress', 'Awaiting review', 'Blocked'],
 
   /* The host EPR's tab strip is redrawn over the background screenshot so that
      "Handover" can appear as the selected tab. Labels match the screenshot,

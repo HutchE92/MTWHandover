@@ -1,5 +1,10 @@
 /* ---------------------------------------------------------------------------
-   MTW Nursing Handover — proof of concept.
+   MTW Nursing Handover — proof of concept. OPTION B.
+
+   Five free-text columns plus Patient Details, rather than Option A's eight
+   mixed columns. Risk scores, infectious status, MRSA swab dates and diet all
+   live inside the Nursing column here; there is no Tasks, Nutrition or Risk
+   Assessments column.
 
    All state lives in this browser only (localStorage). There is no backend and
    no network request: the page is static, so nothing typed here leaves the
@@ -8,7 +13,7 @@
 
    Audit trail: every committed change snapshots the whole patient row, with a
    timestamp and the selected user. Text fields commit on blur (so a snapshot
-   is one edit, not one keystroke); controls commit on change.
+   is one edit, not one keystroke); the EDD commits on change.
    --------------------------------------------------------------------------- */
 
 (function () {
@@ -17,26 +22,44 @@
   const CFG = window.HV_CONFIG;
   const PATIENTS = window.HV_PATIENTS;
 
-  /* Column labels used in the audit trail and snapshot view. */
-  const FIELD_LABELS = {
-    edd: 'Estimated date of discharge',
-    diagnosis: 'Diagnosis & Past Medical History',
-    nursing: 'Additional Nursing Information',
-    nutrition: 'Nutrition',
-    fluidRestriction: 'Nutrition — fluid restrictions',
-    therapy: 'Therapy Plans',
-    discharge: 'Discharge Plans',
-    risk: 'Risk Assessments',
-    tasks: 'Tasks',
-  };
+  /* The five content columns, left to right. This single list drives the
+     table header, the row cells and the order of the audit snapshot, so the
+     three can never drift apart. */
+  const COLUMNS = [
+    {
+      field: 'diagnosis',
+      label: 'Diagnosis and PMHx',
+      width: '17%',
+      placeholder: 'Presenting diagnosis, treatment to date, past medical history…',
+    },
+    {
+      field: 'nursing',
+      label: 'Nursing',
+      width: '22%',
+      placeholder: 'Mobility, continence, skin, cognition, risk scores, infectious status, diet…',
+    },
+    {
+      field: 'therapies',
+      label: 'Therapies',
+      width: '15%',
+      placeholder: 'Physiotherapy, occupational therapy, SALT, dietetics…',
+    },
+    {
+      field: 'medical',
+      label: 'Medical / Surgical',
+      width: '24%',
+      placeholder: 'Latest doctor plan, ward round outcome, medication changes, results…',
+    },
+    {
+      field: 'discharge',
+      label: 'Discharge Planning',
+      width: '17%',
+      placeholder: 'Destination, what is pending, referrals, TTOs, transport, family…',
+    },
+  ];
 
-  const RISK_LABELS = {
-    infectious: 'Infectious status',
-    falls: 'Risk of falls',
-    must: 'MUST completed',
-    mrsaTaken: 'MRSA swab taken',
-    mrsaDue: 'MRSA swab due',
-  };
+  const FIELD_LABELS = Object.fromEntries(COLUMNS.map((c) => [c.field, c.label]));
+  FIELD_LABELS.edd = 'Estimated date of discharge';
 
   /* --- Utilities ---------------------------------------------------------- */
 
@@ -46,13 +69,6 @@
     crypto.randomUUID ? crypto.randomUUID() : 'id' + Date.now() + Math.random().toString(16).slice(2);
 
   const clone = (v) => JSON.parse(JSON.stringify(v));
-
-  /** Today as YYYY-MM-DD in local time — ward days are local days, not UTC. */
-  function today() {
-    const d = new Date();
-    const p = (n) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
-  }
 
   function nowStamp() {
     const d = new Date();
@@ -100,7 +116,7 @@
   /* --- Store -------------------------------------------------------------- */
 
   const store = {
-    data: { notes: {}, risk: {}, edd: {}, tasks: {}, audit: {}, user: CFG.users[0] },
+    data: { notes: {}, edd: {}, audit: {}, user: CFG.users[0] },
 
     load() {
       let saved = null;
@@ -115,32 +131,13 @@
     },
 
     seed() {
-      const d = { notes: {}, risk: {}, edd: {}, tasks: {}, audit: {}, user: CFG.users[0] };
+      const d = { notes: {}, edd: {}, audit: {}, user: CFG.users[0] };
 
       for (const p of PATIENTS) {
         const s = p.seed || {};
-        d.notes[p.id] = {
-          diagnosis: s.diagnosis || '',
-          nursing: s.nursing || '',
-          nutrition: s.nutrition || '',
-          therapy: s.therapy || '',
-          discharge: s.discharge || '',
-          fluidRestriction: s.fluidRestriction || '',
-        };
-        d.risk[p.id] = Object.assign(
-          { infectious: '', falls: '', must: '', mrsaTaken: '', mrsaDue: '' },
-          s.risk || {}
-        );
+        d.notes[p.id] = {};
+        for (const c of COLUMNS) d.notes[p.id][c.field] = s[c.field] || '';
         d.edd[p.id] = p.edd || '';
-        d.tasks[p.id] = [
-          ...(p.seedTasks || []).map((t) => ({
-            id: uid(), text: t.text, due: t.due, status: t.status, done: false, completedAt: null, completedBy: null,
-          })),
-          ...(p.seedHistory || []).map((t) => ({
-            id: uid(), text: t.text, due: t.due, status: 'Complete', done: true,
-            completedAt: t.completedAt, completedBy: t.by || null,
-          })),
-        ];
       }
 
       /* Reconstruct the seeded audit trail. Entries are listed newest first and
@@ -154,7 +151,7 @@
         for (const e of p.seedAudit || []) {
           entries.push({
             id: uid(), at: e.at, by: e.by, change: e.change,
-            snapshot: applyOverrides(current, overlay),
+            snapshot: Object.assign(clone(current), overlay),
           });
           overlay = Object.assign({}, overlay, e.was || {});
         }
@@ -177,18 +174,6 @@
       return this.data.notes[id];
     },
 
-    risk(id) {
-      if (!this.data.risk[id]) {
-        this.data.risk[id] = { infectious: '', falls: '', must: '', mrsaTaken: '', mrsaDue: '' };
-      }
-      return this.data.risk[id];
-    },
-
-    tasks(id) {
-      if (!this.data.tasks[id]) this.data.tasks[id] = [];
-      return this.data.tasks[id];
-    },
-
     audit(id) {
       if (!this.data.audit[id]) this.data.audit[id] = [];
       return this.data.audit[id];
@@ -197,29 +182,11 @@
     /** A complete picture of one patient row, as stored in the audit trail. */
     snapshot(id) {
       const n = this.notes(id);
-      return {
-        edd: this.data.edd[id] || '',
-        diagnosis: n.diagnosis || '',
-        nursing: n.nursing || '',
-        nutrition: n.nutrition || '',
-        fluidRestriction: n.fluidRestriction || '',
-        therapy: n.therapy || '',
-        discharge: n.discharge || '',
-        risk: clone(this.risk(id)),
-        tasks: this.tasks(id).map((t) => ({
-          text: t.text, due: t.due, status: t.status, done: t.done, completedAt: t.completedAt,
-        })),
-      };
+      const snap = { edd: this.data.edd[id] || '' };
+      for (const c of COLUMNS) snap[c.field] = n[c.field] || '';
+      return snap;
     },
   };
-
-  function applyOverrides(snap, overlay) {
-    const out = clone(snap);
-    for (const [k, v] of Object.entries(overlay)) {
-      out[k] = k === 'risk' ? Object.assign(clone(out.risk), v) : v;
-    }
-    return out;
-  }
 
   /* --- Audit -------------------------------------------------------------- */
 
@@ -258,7 +225,7 @@
     saveTimer = setTimeout(() => store.save(), 500);
   }
 
-  /* --- Reusable controls -------------------------------------------------- */
+  /* --- Cells -------------------------------------------------------------- */
 
   /** Grow a textarea to fit its content, so no clinical detail is hidden. */
   function autosize(ta) {
@@ -269,45 +236,6 @@
   function autosizeAll(root = document) {
     for (const ta of root.querySelectorAll('textarea.ta')) autosize(ta);
   }
-
-  function textarea(pid, field, placeholder, extraClass) {
-    return el('textarea', {
-      class: 'ta' + (extraClass ? ' ' + extraClass : ''),
-      placeholder,
-      value: store.notes(pid)[field] || '',
-      dataset: { role: 'note', pid, field },
-      spellcheck: true,
-    });
-  }
-
-  /** Yes / No segmented control. The selected answer is marked in blue
-      regardless of which it is — see the note in handover.css. */
-  function yesNo(pid, role, field, value) {
-    const wrap = el('div', { class: 'yn' });
-    for (const v of ['yes', 'no']) {
-      const label = el('label', { class: `yn__opt yn__opt--${v}` });
-      label.appendChild(el('input', {
-        type: 'radio',
-        name: `${role}-${field}-${pid}`,
-        value: v,
-        checked: value === v,
-        dataset: { role, pid, field },
-      }));
-      label.appendChild(el('span', { text: v === 'yes' ? 'Yes' : 'No' }));
-      wrap.appendChild(label);
-    }
-    return wrap;
-  }
-
-  function dateInput(pid, role, field, value, label) {
-    return el('input', {
-      type: 'date', class: 'dt', value: value || '',
-      dataset: { role, pid, field },
-      'aria-label': label,
-    });
-  }
-
-  /* --- Cells -------------------------------------------------------------- */
 
   function patientCell(p) {
     const td = el('td');
@@ -356,172 +284,49 @@
     }));
     box.appendChild(edd);
 
-    const btns = el('div', { class: 'pt__btns' });
-
-    const handoverBtn = el('button', {
+    box.appendChild(el('div', { class: 'pt__btns' }, el('button', {
       type: 'button', class: 'btn btn--ghost',
       dataset: { role: 'handover', pid: p.id },
       title: 'Audit trail of every change to this patient row',
     }, [
       el('span', { text: 'Handover History' }),
       el('span', { class: 'btn__badge', text: String(store.audit(p.id).length) }),
-    ]);
-    btns.appendChild(handoverBtn);
+    ])));
 
-    const doneCount = store.tasks(p.id).filter((t) => t.done).length;
-    btns.appendChild(el('button', {
-      type: 'button', class: 'btn btn--ghost',
-      dataset: { role: 'taskhist', pid: p.id },
-      title: 'Tasks completed for this patient',
-    }, [
-      el('span', { text: 'Task History' }),
-      el('span', { class: 'btn__badge', text: String(doneCount) }),
-    ]));
-
-    box.appendChild(btns);
     td.appendChild(box);
     return td;
   }
 
-  function noteCell(p, field, placeholder) {
-    return el('td', {}, textarea(p.id, field, placeholder));
-  }
-
-  function nutritionCell(p) {
-    const td = el('td');
-    const notes = store.notes(p.id);
-
-    const fluid = el('div', { class: 'nut__fluid' });
-    fluid.appendChild(el('span', {
-      class: 'nut__q', text: 'Is the patient currently on fluid restrictions?',
-    }));
-    fluid.appendChild(yesNo(p.id, 'fluid', 'fluidRestriction', notes.fluidRestriction));
-    td.appendChild(fluid);
-
-    td.appendChild(textarea(p.id, 'nutrition', 'Diet, assistance, supplements, SALT input…'));
-    return td;
-  }
-
-  function riskCell(p) {
-    const td = el('td');
-    const r = store.risk(p.id);
-    const box = el('div', { class: 'ra' });
-
-    const row = (label, control) => {
-      const div = el('div', { class: 'ra__row' });
-      div.appendChild(el('span', { class: 'ra__label', text: label }));
-      div.appendChild(control);
-      return div;
-    };
-
-    box.appendChild(row(RISK_LABELS.infectious, el('textarea', {
+  function noteCell(p, col) {
+    return el('td', {}, el('textarea', {
       class: 'ta',
-      placeholder: 'e.g. nil known, MRSA, C. diff, precautions in place…',
-      value: r.infectious || '',
-      dataset: { role: 'risk', pid: p.id, field: 'infectious' },
+      placeholder: col.placeholder,
+      value: store.notes(p.id)[col.field] || '',
+      dataset: { role: 'note', pid: p.id, field: col.field },
       spellcheck: true,
-    })));
-
-    box.appendChild(row(RISK_LABELS.falls, yesNo(p.id, 'riskyn', 'falls', r.falls)));
-    box.appendChild(row(RISK_LABELS.must, yesNo(p.id, 'riskyn', 'must', r.must)));
-
-    /* Taken and due are one paired fact, so they share a single row side by
-       side rather than taking a labelled sub-row each. */
-    const overdue = Boolean(r.mrsaDue && r.mrsaDue < today());
-    const field = (label, name, value, isOverdue) => {
-      const f = el('div', { class: 'ra__field' + (isOverdue ? ' ra__field--overdue' : '') });
-      f.appendChild(el('span', {
-        class: 'ra__sublabel', text: label,
-        title: isOverdue ? 'Overdue' : '',
-      }));
-      f.appendChild(dateInput(p.id, 'riskdate', name, value, `MRSA swab ${label.toLowerCase()}`));
-      return f;
-    };
-
-    const split = el('div', { class: 'ra__split' }, [
-      field('MRSA taken', 'mrsaTaken', r.mrsaTaken, false),
-      field('MRSA due', 'mrsaDue', r.mrsaDue, overdue),
-    ]);
-    box.appendChild(el('div', { class: 'ra__row' }, split));
-
-    td.appendChild(box);
-    return td;
-  }
-
-  function tasksCell(p) {
-    const td = el('td');
-    const box = el('div', { class: 'tk' });
-
-    const active = store.tasks(p.id)
-      .filter((t) => !t.done)
-      .sort((a, b) => (a.due || '9999-99-99').localeCompare(b.due || '9999-99-99'));
-
-    if (!active.length) {
-      box.appendChild(el('div', { class: 'tk__empty', text: 'No outstanding tasks' }));
-    } else {
-      const list = el('ul', { class: 'tk__list' });
-      const t0 = today();
-
-      for (const t of active) {
-        const overdue = t.due && t.due < t0;
-        const isToday = t.due === t0;
-        const li = el('li', {
-          class: `tk__item${overdue ? ' tk__item--overdue' : isToday ? ' tk__item--today' : ''}`,
-        });
-
-        li.appendChild(el('input', {
-          type: 'checkbox', class: 'tk__check',
-          dataset: { role: 'tick', pid: p.id, tid: t.id },
-          title: 'Mark complete',
-          'aria-label': `Mark complete: ${t.text}`,
-        }));
-        li.appendChild(el('span', { class: 'tk__text', text: t.text }));
-
-        const meta = el('div', { class: 'tk__meta' });
-        meta.appendChild(el('span', {
-          class: `tk__due${overdue ? ' tk__due--overdue' : isToday ? ' tk__due--today' : ''}`,
-          text: t.due
-            ? (overdue ? `Overdue — ${fmtDate(t.due)}` : isToday ? 'Due today' : `Due ${fmtDate(t.due)}`)
-            : 'No due date',
-        }));
-
-        const sel = el('select', {
-          class: 'tk__status',
-          dataset: { role: 'status', pid: p.id, tid: t.id },
-          'aria-label': 'Task status',
-        });
-        for (const s of CFG.taskStatuses) {
-          sel.appendChild(el('option', { value: s, text: s, selected: s === t.status }));
-        }
-        meta.appendChild(sel);
-
-        li.appendChild(meta);
-        list.appendChild(li);
-      }
-      box.appendChild(list);
-    }
-
-    const add = el('form', { class: 'tk__add', dataset: { role: 'addTask', pid: p.id } });
-    add.appendChild(el('input', {
-      type: 'text', placeholder: 'Add a task…', required: true, maxLength: 200,
-      dataset: { role: 'newText' }, 'aria-label': 'New task description',
     }));
-    const addRow = el('div', { class: 'tk__addRow' });
-    addRow.appendChild(el('input', {
-      type: 'date', class: 'dt', value: today(),
-      dataset: { role: 'newDue' }, 'aria-label': 'Due date',
-    }));
-    addRow.appendChild(el('button', { type: 'submit', class: 'btn btn--primary btn--sm', text: 'Add' }));
-    add.appendChild(addRow);
-    box.appendChild(add);
-
-    td.appendChild(box);
-    return td;
   }
 
   /* --- Render ------------------------------------------------------------- */
 
-  const CELL_INDEX = { patient: 0, diagnosis: 1, nursing: 2, tasks: 3, nutrition: 4, risk: 5, therapy: 6, discharge: 7 };
+  /** Build the colgroup and header from COLUMNS so they cannot drift from the
+      cells or the audit order. */
+  function renderHead() {
+    const cols = $('#cols');
+    const head = $('#head');
+    cols.textContent = '';
+    head.textContent = '';
+
+    cols.appendChild(el('col', { class: 'col-patient' }));
+    head.appendChild(el('th', { scope: 'col', text: 'Patient Details' }));
+
+    for (const c of COLUMNS) {
+      const col = el('col');
+      col.style.width = c.width;
+      cols.appendChild(col);
+      head.appendChild(el('th', { scope: 'col', text: c.label }));
+    }
+  }
 
   function render() {
     const tbody = $('#rows');
@@ -530,36 +335,11 @@
     for (const p of PATIENTS) {
       const tr = el('tr', { dataset: { pid: p.id } });
       tr.appendChild(patientCell(p));
-      tr.appendChild(noteCell(p, 'diagnosis', 'Presenting diagnosis, treatment, relevant past medical history…'));
-      tr.appendChild(noteCell(p, 'nursing', 'Mobility, continence, skin, cognition, communication, family…'));
-      tr.appendChild(tasksCell(p));
-      tr.appendChild(nutritionCell(p));
-      tr.appendChild(riskCell(p));
-      tr.appendChild(noteCell(p, 'therapy', 'Physiotherapy, occupational therapy, SALT, dietetics…'));
-      tr.appendChild(noteCell(p, 'discharge', 'Destination, referrals, TTOs, transport, family contact…'));
+      for (const col of COLUMNS) tr.appendChild(noteCell(p, col));
       tbody.appendChild(tr);
     }
     autosizeAll(tbody);
-    updateCount();
-  }
-
-  function updateCount() {
-    const outstanding = PATIENTS.reduce((n, p) => n + store.tasks(p.id).filter((t) => !t.done).length, 0);
-    $('#patientCount').textContent =
-      `${PATIENTS.length} patients · ${outstanding} task${outstanding === 1 ? '' : 's'} outstanding`;
-  }
-
-  /** Replace a single cell in place, so editing elsewhere in the row is not disturbed. */
-  function refreshCell(pid, which) {
-    const row = $(`#rows tr[data-pid="${pid}"]`);
-    if (!row) return render();
-    const p = PATIENTS.find((x) => x.id === pid);
-    const builders = {
-      patient: patientCell, tasks: tasksCell, nutrition: nutritionCell, risk: riskCell,
-    };
-    const cell = builders[which](p);
-    row.children[CELL_INDEX[which]].replaceWith(cell);
-    autosizeAll(cell);
+    $('#patientCount').textContent = `${PATIENTS.length} patients`;
   }
 
   /* --- Events ------------------------------------------------------------- */
@@ -572,96 +352,41 @@
     const rows = $('#rows');
 
     rows.addEventListener('focusin', (e) => {
-      const t = e.target;
-      if (t.dataset.role === 'note' || t.dataset.role === 'risk') focusValues.set(t, t.value);
+      if (e.target.dataset.role === 'note') focusValues.set(e.target, e.target.value);
     });
 
     rows.addEventListener('input', (e) => {
       const t = e.target;
-      const { role, pid, field } = t.dataset;
-      if (role === 'note') { store.notes(pid)[field] = t.value; autosize(t); saveSoon(); }
-      else if (role === 'risk') { store.risk(pid)[field] = t.value; autosize(t); saveSoon(); }
+      if (t.dataset.role === 'note') {
+        store.notes(t.dataset.pid)[t.dataset.field] = t.value;
+        autosize(t);
+        saveSoon();
+      }
     });
 
     rows.addEventListener('focusout', (e) => {
       const t = e.target;
-      const { role, pid, field } = t.dataset;
-      if (role !== 'note' && role !== 'risk') return;
+      if (t.dataset.role !== 'note') return;
       if (!focusValues.has(t) || focusValues.get(t) === t.value) return;
       focusValues.delete(t);
-      commitAudit(pid, role === 'risk' ? FIELD_LABELS.risk : FIELD_LABELS[field]);
+      commitAudit(t.dataset.pid, FIELD_LABELS[t.dataset.field]);
     });
 
     rows.addEventListener('change', (e) => {
       const t = e.target;
-      const { role, pid, tid, field } = t.dataset;
-
-      if (role === 'edd') {
-        store.data.edd[pid] = t.value;
-        commitAudit(pid, FIELD_LABELS.edd);
-      } else if (role === 'fluid') {
-        store.notes(pid).fluidRestriction = t.value;
-        commitAudit(pid, FIELD_LABELS.fluidRestriction);
-        refreshCell(pid, 'nutrition');
-      } else if (role === 'riskyn') {
-        store.risk(pid)[field] = t.value;
-        commitAudit(pid, FIELD_LABELS.risk);
-      } else if (role === 'riskdate') {
-        store.risk(pid)[field] = t.value;
-        commitAudit(pid, FIELD_LABELS.risk);
-        refreshCell(pid, 'risk');
-      } else if (role === 'tick' && t.checked) {
-        const task = store.tasks(pid).find((x) => x.id === tid);
-        if (task) {
-          task.done = true;
-          task.status = 'Complete';
-          task.completedAt = nowStamp();
-          task.completedBy = store.data.user;
-          commitAudit(pid, FIELD_LABELS.tasks);
-          refreshCell(pid, 'tasks');
-          refreshCell(pid, 'patient');
-          updateCount();
-        }
-      } else if (role === 'status') {
-        const task = store.tasks(pid).find((x) => x.id === tid);
-        if (task) {
-          task.status = t.value;
-          commitAudit(pid, FIELD_LABELS.tasks);
-        }
+      if (t.dataset.role === 'edd') {
+        store.data.edd[t.dataset.pid] = t.value;
+        commitAudit(t.dataset.pid, FIELD_LABELS.edd);
       }
-    });
-
-    rows.addEventListener('submit', (e) => {
-      const form = e.target;
-      if (form.dataset.role !== 'addTask') return;
-      e.preventDefault();
-
-      const pid = form.dataset.pid;
-      const textEl = $('[data-role="newText"]', form);
-      const text = textEl.value.trim();
-      if (!text) return;
-
-      store.tasks(pid).push({
-        id: uid(), text, due: $('[data-role="newDue"]', form).value,
-        status: 'Outstanding', done: false, completedAt: null, completedBy: null,
-      });
-      commitAudit(pid, FIELD_LABELS.tasks);
-      refreshCell(pid, 'tasks');
-      updateCount();
-
-      const next = $(`#rows tr[data-pid="${pid}"] [data-role="newText"]`);
-      if (next) next.focus();
     });
 
     rows.addEventListener('click', (e) => {
       const h = e.target.closest('[data-role="handover"]');
-      if (h) return openHandoverHistory(h.dataset.pid);
-      const t = e.target.closest('[data-role="taskhist"]');
-      if (t) return openTaskHistory(t.dataset.pid);
+      if (h) openHandoverHistory(h.dataset.pid);
     });
 
-    /* Ward / shift are presentational in the proof of concept — one ward of
-       synthetic patients is loaded regardless of selection. */
+    /* Ward is presentational in the proof of concept — one ward of synthetic
+       patients is loaded regardless of selection. */
     const ward = $('#wardSelect');
     const setWard = () => { $('#wardLabel').textContent = ward.value.replace(/^Ward \d+ — /, ''); };
     ward.addEventListener('change', setWard);
@@ -703,32 +428,9 @@
       dl.appendChild(el('dd', { text: value || '' }));
     };
 
-    /* Ordered to match the board's columns left to right: patient details
-       (EDD), diagnosis, nursing, tasks, nutrition, risk, therapy, discharge. */
+    /* Ordered to match the board's columns left to right. */
     add('EDD', snap.edd ? fmtDate(snap.edd) : '');
-    add(FIELD_LABELS.diagnosis, snap.diagnosis);
-    add(FIELD_LABELS.nursing, snap.nursing);
-
-    const open = (snap.tasks || []).filter((t) => !t.done);
-    add('Open tasks', open.length
-      ? open.map((t) => `• ${t.text}${t.due ? ` (due ${fmtDate(t.due)})` : ''} — ${t.status}`).join('\n')
-      : 'None');
-
-    add('Fluid restrictions', snap.fluidRestriction ? (snap.fluidRestriction === 'yes' ? 'Yes' : 'No') : '');
-    add(FIELD_LABELS.nutrition, snap.nutrition);
-
-    const r = snap.risk || {};
-    const yn = (v) => (v ? (v === 'yes' ? 'Yes' : 'No') : '—');
-    add(FIELD_LABELS.risk,
-      `${RISK_LABELS.infectious}: ${r.infectious || '—'}\n` +
-      `${RISK_LABELS.falls}: ${yn(r.falls)}\n` +
-      `${RISK_LABELS.must}: ${yn(r.must)}\n` +
-      `${RISK_LABELS.mrsaTaken}: ${r.mrsaTaken ? fmtDate(r.mrsaTaken) : '—'}\n` +
-      `${RISK_LABELS.mrsaDue}: ${r.mrsaDue ? fmtDate(r.mrsaDue) : '—'}`
-    );
-
-    add(FIELD_LABELS.therapy, snap.therapy);
-    add(FIELD_LABELS.discharge, snap.discharge);
+    for (const c of COLUMNS) add(c.label, snap[c.field]);
 
     return dl;
   }
@@ -777,61 +479,6 @@
 
     body.appendChild(wrap);
     $('#handoverModal').showModal();
-  }
-
-  /* --- Task history ------------------------------------------------------- */
-
-  function openTaskHistory(pid) {
-    const p = PATIENTS.find((x) => x.id === pid);
-    const done = store.tasks(pid)
-      .filter((t) => t.done)
-      .sort((a, b) => (b.completedAt || '').localeCompare(a.completedAt || ''));
-
-    $('#taskTitle').textContent = `Task History — ${p.name}`;
-    $('#taskSub').textContent = `${p.bed} · ${done.length} completed task${done.length === 1 ? '' : 's'}`;
-
-    const body = $('#taskBody');
-    body.textContent = '';
-
-    if (!done.length) {
-      body.appendChild(el('div', { class: 'hist__empty', text: 'No completed tasks for this patient.' }));
-    } else {
-      const table = el('table', { class: 'taskHist' });
-      const hr = el('tr');
-      for (const h of ['Task', 'Was due', 'Completed', 'By', '']) hr.appendChild(el('th', { text: h }));
-      table.appendChild(el('thead', {}, hr));
-
-      const tbody = el('tbody');
-      for (const t of done) {
-        const tr = el('tr');
-        tr.appendChild(el('td', { text: t.text }));
-        tr.appendChild(el('td', { text: t.due ? fmtDate(t.due) : '—' }));
-        tr.appendChild(el('td', { text: fmtDateTime(t.completedAt) || '—' }));
-        tr.appendChild(el('td', { text: t.completedBy || '—' }));
-
-        const restore = el('button', {
-          type: 'button', class: 'btn btn--sm', text: 'Restore',
-          title: 'Return this task to the outstanding list',
-        });
-        restore.addEventListener('click', () => {
-          t.done = false;
-          t.status = 'Outstanding';
-          t.completedAt = null;
-          t.completedBy = null;
-          commitAudit(pid, FIELD_LABELS.tasks);
-          refreshCell(pid, 'tasks');
-          refreshCell(pid, 'patient');
-          updateCount();
-          openTaskHistory(pid);
-        });
-        tr.appendChild(el('td', {}, restore));
-        tbody.appendChild(tr);
-      }
-      table.appendChild(tbody);
-      body.appendChild(table);
-    }
-
-    $('#taskModal').showModal();
   }
 
   /* --- Alignment overlay (Shift+A) ---------------------------------------- */
@@ -929,6 +576,7 @@
   /* --- Boot --------------------------------------------------------------- */
 
   store.load();
+  renderHead();
   render();
   wire();
   wireAlignment();

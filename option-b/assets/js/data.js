@@ -1,13 +1,15 @@
 /* ---------------------------------------------------------------------------
-   Synthetic seed data — a general medical ward.
+   Synthetic seed data — a general medical ward. OPTION B.
 
    NOTHING HERE IS REAL. Names are fictional. NHS numbers come from the
    999 000 xxxx synthetic/test range and carry valid Modulus 11 check digits,
    so format validation behaves realistically while being unable to match a
    real patient. Hospital numbers are invented.
 
-   This file is committed to a public repository. It must never contain
-   anything other than test data.
+   Option B uses five free-text columns instead of Option A's eight mixed
+   columns. Risk scores, infectious status, MRSA swab dates and diet all live
+   inside `nursing` here rather than in a separate Risk Assessments or
+   Nutrition column.
 
    `seedAudit` entries carry a `was` map: the previous value of whatever the
    entry changed. The app reconstructs each historic snapshot by applying those
@@ -29,40 +31,23 @@ window.HV_PATIENTS = [
     edd: '2026-09-15',
     seed: {
       diagnosis:
-        'Community acquired pneumonia — right basal. Day 4 IV co-amoxiclav (allergy: given clarithromycin).\n\nPMH: COPD, hypertension, osteoarthritis, previous TIA 2019.',
+        'Community acquired pneumonia — right basal. Day 4 IV co-amoxiclav (allergy: given clarithromycin).\n\nPMHx: COPD, hypertension, osteoarthritis, previous TIA 2019.',
       nursing:
-        'Assistance of 1 for transfers, uses Zimmer frame. Continent, requests toilet — call bell within reach.\nHard of hearing (right ear) — speak clearly, face patient. Daughter Susan is main contact.',
-      nutrition:
-        'Soft diet, full assistance not required but encourage. Poor appetite — food chart in progress. Supplements BD.',
-      fluidRestriction: 'no',
-      therapy:
-        'Physio reviewing daily — mobilising 5m with frame, aiming 10m before discharge.\nOT home assessment requested 09/09, awaiting date.',
+        'Assistance of 1 for transfers, uses Zimmer frame. Continent, requests toilet — call bell within reach.\nHard of hearing (right ear) — speak clearly, face patient. Daughter Susan is main contact.\n\nRisk scores: Waterlow 15. Falls risk — yes, reassessment due 12/09. MUST completed.\nInfectious status: nil known, standard precautions. MRSA swab taken 06/09, next due 13/09.\nDiet: soft diet, encourage intake. Poor appetite — food chart in progress. Supplements BD.',
+      therapies:
+        'PT: reviewing daily — mobilising 5m with frame, aiming 10m before discharge.\nOT: home assessment requested 09/09, awaiting date. Will need stair and kitchen assessment.',
+      medical:
+        'Consultant review 10/09 (Dr Aldridge): CRP falling, 96 to 41. Afebrile 24h.\nPlan — complete clarithromycin, day 4 of 5. Repeat U&Es and CRP today. If bloods satisfactory and remains afebrile, medically fit from 11/09.\nNo change to inhalers. Continue prophylactic LMWH.',
       discharge:
-        'For discharge home with existing package of care (2x daily). Awaiting OT home assessment and TTOs.\nTransport required — daughter unable to collect.',
-      risk: {
-        infectious: 'Nil known. Standard precautions.',
-        falls: 'yes',
-        must: 'yes',
-        mrsaTaken: '2026-09-06',
-        mrsaDue: '2026-09-13',
-      },
+        'For discharge home with existing package of care (2x daily).\nPending: OT home assessment date, TTOs, transport booking.\nDaughter unable to collect — hospital transport required.',
     },
-    seedTasks: [
-      { text: 'Repeat bloods — U&Es and CRP', due: '2026-09-09', status: 'Outstanding' },
-      { text: 'Chase OT home assessment date', due: '2026-09-10', status: 'In progress' },
-      { text: 'Falls risk reassessment due', due: '2026-09-12', status: 'Outstanding' },
-    ],
-    seedHistory: [
-      { text: 'Catheter removed, TWOC commenced', due: '2026-09-08', completedAt: '2026-09-08T14:20', by: 'L. Okafor (Staff Nurse)' },
-      { text: 'Waterlow score recalculated', due: '2026-09-07', completedAt: '2026-09-07T09:50', by: 'M. Kaur (HCA)' },
-    ],
     seedAudit: [
-      { at: '2026-09-10T08:15', by: 'S. Ahmed (Staff Nurse)', change: 'Discharge Plans',
-        was: { discharge: 'For discharge home with existing package of care (2x daily). Awaiting OT home assessment.' } },
+      { at: '2026-09-10T08:15', by: 'S. Ahmed (Staff Nurse)', change: 'Discharge Planning',
+        was: { discharge: 'For discharge home with existing package of care (2x daily).\nPending: OT home assessment date, TTOs.' } },
+      { at: '2026-09-10T07:40', by: 'Dr M. Aldridge (Consultant)', change: 'Medical / Surgical',
+        was: { medical: 'Consultant review 09/09: CRP 96. Continue IV antibiotics and review in 24h.' } },
       { at: '2026-09-09T21:40', by: 'J. Whitfield (Charge Nurse)', change: 'Estimated date of discharge',
         was: { edd: '2026-09-13' } },
-      { at: '2026-09-09T14:05', by: 'L. Okafor (Staff Nurse)', change: 'Additional Nursing Information',
-        was: { nursing: 'Assistance of 1 for transfers, uses Zimmer frame. Hard of hearing (right ear).' } },
     ],
   },
 
@@ -79,36 +64,21 @@ window.HV_PATIENTS = [
     edd: '2026-09-17',
     seed: {
       diagnosis:
-        'Decompensated heart failure, NYHA III. Day 5 IV furosemide, now on oral.\n\nPMH: Ischaemic heart disease, CABG 2011, atrial fibrillation (on apixaban), CKD stage 3.',
+        'Decompensated heart failure, NYHA III. Day 5 IV furosemide, now converted to oral.\n\nPMHx: Ischaemic heart disease, CABG 2011, atrial fibrillation (on apixaban), CKD stage 3.',
       nursing:
-        'Daily weights before breakfast — record on flowsheet. Strict fluid balance, 1.5L restriction.\nOrthopnoeic — sleeps on 3 pillows. Independent with washing, slow mobilising.',
-      nutrition:
-        'Low salt diet. Fluid restriction 1.5L/24h — jug chart at bedside, family aware not to bring drinks.',
-      fluidRestriction: 'yes',
-      therapy: 'Physio input for exercise tolerance. Cardiac rehab referral to be made on discharge.',
+        'Daily weights before breakfast — record on flowsheet. Strict fluid balance, 1.5L restriction.\nOrthopnoeic — sleeps on 3 pillows. Independent with washing, slow mobilising with stick.\n\nRisk scores: Waterlow 12. Falls risk — no. MUST completed.\nInfectious status: nil known. MRSA swab taken 05/09, next due 12/09.\nDiet: low salt. Fluid restricted 1.5L/24h — jug chart at bedside, family aware not to bring drinks.',
+      therapies:
+        'PT: exercise tolerance work, mobilising 20m on the flat.\nCardiac rehab referral to be made on discharge. No OT needs identified.',
+      medical:
+        'Ward round 10/09 (Dr Nayar): weight down 4.2kg since admission. Creatinine stable at 132.\nPlan — continue oral furosemide 40mg BD. Await echo before confirming EDD. Consider spironolactone once renal function confirmed stable.\nApixaban continued at reduced dose.',
       discharge:
-        'Home with wife. Needs heart failure nurse follow-up and weight monitoring plan.\nAwaiting echo result before EDD confirmed.',
-      risk: {
-        infectious: 'Nil known.',
-        falls: 'no',
-        must: 'yes',
-        mrsaTaken: '2026-09-05',
-        mrsaDue: '2026-09-12',
-      },
+        'Home with wife, who provides support. Ground floor flat, no stairs.\nPending: echo result, heart failure nurse referral, weight monitoring plan and scales at home.',
     },
-    seedTasks: [
-      { text: 'Daily weight — record and compare', due: '2026-09-10', status: 'Outstanding' },
-      { text: 'Chase echo result', due: '2026-09-11', status: 'Awaiting review' },
-      { text: 'Heart failure nurse referral', due: '2026-09-12', status: 'Outstanding' },
-    ],
-    seedHistory: [
-      { text: 'IV to oral furosemide switch', due: '2026-09-09', completedAt: '2026-09-09T11:15', by: 'D. Reid (Ward Sister)' },
-    ],
     seedAudit: [
-      { at: '2026-09-10T07:55', by: 'M. Kaur (HCA)', change: 'Nutrition',
-        was: { nutrition: 'Low salt diet. Fluid restriction 1.5L/24h — jug chart at bedside.' } },
-      { at: '2026-09-09T16:20', by: 'D. Reid (Ward Sister)', change: 'Diagnosis & Past Medical History',
-        was: { diagnosis: 'Decompensated heart failure, NYHA III. Day 5 IV furosemide.\n\nPMH: Ischaemic heart disease, CABG 2011, atrial fibrillation (on apixaban), CKD stage 3.' } },
+      { at: '2026-09-10T09:05', by: 'Dr P. Nayar (Registrar)', change: 'Medical / Surgical',
+        was: { medical: 'Ward round 09/09: weight down 3.1kg. Continue IV furosemide, review for oral switch tomorrow.' } },
+      { at: '2026-09-09T16:20', by: 'D. Reid (Ward Sister)', change: 'Nursing',
+        was: { nursing: 'Daily weights before breakfast. Strict fluid balance, 1.5L restriction.\nOrthopnoeic — sleeps on 3 pillows.\n\nRisk scores: Waterlow 12. Falls risk — no. MUST completed.\nInfectious status: nil known. MRSA swab taken 05/09, next due 12/09.\nDiet: low salt. Fluid restricted 1.5L/24h.' } },
     ],
   },
 
@@ -125,36 +95,21 @@ window.HV_PATIENTS = [
     edd: '2026-09-14',
     seed: {
       diagnosis:
-        'Urinary tract infection with hyperactive delirium. Day 3 IV cefalexin.\n\nPMH: Type 2 diabetes, hypothyroidism, previous UTIs.',
+        'Urinary tract infection with hyperactive delirium. Day 3 IV cefalexin.\n\nPMHx: Type 2 diabetes, hypothyroidism, recurrent UTIs.',
       nursing:
-        '4AT score 6 on admission, improving. Reorientate frequently, clock and calendar at bedside.\nWandering at night — bed in view of nurses station. Gujarati first language, family interpret; interpreter available.',
-      nutrition:
-        'Diabetic diet, vegetarian. BM monitoring QDS. Eating with prompting, family bringing food from home.',
-      fluidRestriction: 'no',
-      therapy: 'Physio not required currently — mobilising independently. OT to review cognition before discharge.',
+        '4AT score 6 on admission, now 3 and improving. Reorientate frequently, clock and calendar at bedside.\nWandering at night — bed within sight of nurses station. Gujarati first language; family interpret, formal interpreter available.\n\nRisk scores: Waterlow 14. Falls risk — yes, bed rails discussed with family. MUST completed.\nInfectious status: ESBL E. coli in urine — contact precautions, side room not required. MRSA swab taken 08/09, next due 15/09.\nDiet: diabetic, vegetarian. BMs QDS. Eating with prompting, family bringing food from home.',
+      therapies:
+        'PT: not required — mobilising independently, steady.\nOT: to review cognition and function before discharge, particularly medication management.',
+      medical:
+        'Ward round 10/09 (Dr Chen): clinically improving, apyrexial 48h. Sensitivities confirm cefalexin appropriate.\nPlan — complete 5 days IV then oral to total 7 days. Repeat MSU on completion. Delirium screen sent, B12 and folate normal.\nHold metformin while inpatient, restart on discharge.',
       discharge:
-        'Home with son and daughter-in-law. Needs delirium information leaflet and GP follow-up for repeat MSU.',
-      risk: {
-        infectious: 'ESBL E. coli in urine — contact precautions, side room not required.',
-        falls: 'yes',
-        must: 'yes',
-        mrsaTaken: '2026-09-08',
-        mrsaDue: '2026-09-15',
-      },
+        'Home with son and daughter-in-law, who are present daily.\nPending: OT cognitive review, interpreter for discharge discussion, delirium information leaflet, GP follow-up for repeat MSU.',
     },
-    seedTasks: [
-      { text: 'Repeat 4AT assessment', due: '2026-09-10', status: 'Outstanding' },
-      { text: 'Book interpreter for discharge discussion', due: '2026-09-11', status: 'Outstanding' },
-      { text: 'Send repeat MSU', due: '2026-09-12', status: 'Outstanding' },
-    ],
-    seedHistory: [
-      { text: 'Cognitive screen completed', due: '2026-09-08', completedAt: '2026-09-08T10:30', by: 'S. Ahmed (Staff Nurse)' },
-    ],
     seedAudit: [
-      { at: '2026-09-10T09:30', by: 'S. Ahmed (Staff Nurse)', change: 'Risk Assessments',
-        was: { risk: { infectious: 'Query UTI — awaiting sensitivities.', falls: 'yes', must: 'yes', mrsaTaken: '2026-09-08', mrsaDue: '2026-09-15' } } },
-      { at: '2026-09-08T22:10', by: 'J. Whitfield (Charge Nurse)', change: 'Additional Nursing Information',
-        was: { nursing: '4AT score 6 on admission. Reorientate frequently. Gujarati first language.' } },
+      { at: '2026-09-10T09:30', by: 'S. Ahmed (Staff Nurse)', change: 'Nursing',
+        was: { nursing: '4AT score 6 on admission. Reorientate frequently, clock and calendar at bedside.\nWandering at night. Gujarati first language.\n\nRisk scores: Waterlow 14. Falls risk — yes. MUST completed.\nInfectious status: query UTI, awaiting sensitivities. MRSA swab taken 08/09, next due 15/09.\nDiet: diabetic, vegetarian. BMs QDS.' } },
+      { at: '2026-09-09T11:15', by: 'Dr L. Chen (SHO)', change: 'Medical / Surgical',
+        was: { medical: 'Ward round 09/09: still intermittently pyrexial. Continue IV antibiotics, chase sensitivities.' } },
     ],
   },
 
@@ -171,35 +126,19 @@ window.HV_PATIENTS = [
     edd: '2026-09-12',
     seed: {
       diagnosis:
-        'Infective exacerbation of COPD. Day 4 oral prednisolone and doxycycline. Weaned off nebulisers to inhalers 09/09.\n\nPMH: COPD (FEV1 42%), type 2 diabetes, ex-smoker 40 pack years.',
+        'Infective exacerbation of COPD. Day 4 oral prednisolone and doxycycline. Weaned from nebulisers to inhalers 09/09.\n\nPMHx: COPD (FEV1 42%), type 2 diabetes, ex-smoker 40 pack years.',
       nursing:
-        'Sats target 88–92% — 1L via nasal specs overnight only. Self-caring, independent mobility.\nCapillary BMs raised on steroids — sliding scale not required, monitoring QDS.',
-      nutrition: 'Diabetic diet. Good appetite. No concerns.',
-      fluidRestriction: 'no',
-      therapy:
-        'Respiratory physio for airway clearance — self-managing well. Pulmonary rehab referral made 08/09.',
+        'Sats target 88–92% — 1L via nasal specs overnight only, off oxygen by day.\nSelf-caring, independent mobility. Capillary BMs raised on steroids, monitoring QDS — no sliding scale needed.\n\nRisk scores: Waterlow 10. Falls risk — no. MUST completed.\nInfectious status: nil known, standard precautions. MRSA swab taken 07/09, next due 14/09.\nDiet: diabetic. Good appetite, no concerns.',
+      therapies:
+        'PT: respiratory physio for airway clearance — self-managing well, discharged from PT caseload.\nPulmonary rehab referral submitted 08/09. No OT needs.',
+      medical:
+        'Ward round 10/09 (Dr Nayar): sats 91% on air, chest clear of wheeze. Completing 5 days prednisolone.\nPlan — medically fit for discharge 11/09. Needs inhaler technique confirmed and a rescue pack on TTOs.\nDiscussed steroid effect on BMs; no change to metformin.',
       discharge:
-        'Home alone, daughter nearby. For discharge once steroid course reviewed. Needs inhaler technique check and rescue pack.',
-      risk: {
-        infectious: 'Nil known. Standard precautions.',
-        falls: 'no',
-        must: 'yes',
-        mrsaTaken: '2026-09-07',
-        mrsaDue: '2026-09-14',
-      },
+        'Home alone, daughter lives nearby and visits daily.\nPending: inhaler technique teaching, TTOs including rescue pack, pulmonary rehab appointment confirmation.',
     },
-    seedTasks: [
-      { text: 'Inhaler technique teaching before discharge', due: '2026-09-11', status: 'Outstanding' },
-      { text: 'TTOs to be ordered — include rescue pack', due: '2026-09-11', status: 'Outstanding' },
-      { text: 'Confirm pulmonary rehab appointment', due: '2026-09-14', status: 'Awaiting review' },
-    ],
-    seedHistory: [
-      { text: 'Weaned from nebulisers to inhalers', due: '2026-09-09', completedAt: '2026-09-09T13:45', by: 'L. Okafor (Staff Nurse)' },
-      { text: 'Pulmonary rehab referral submitted', due: '2026-09-08', completedAt: '2026-09-08T15:10', by: 'S. Ahmed (Staff Nurse)' },
-    ],
     seedAudit: [
-      { at: '2026-09-09T18:00', by: 'L. Okafor (Staff Nurse)', change: 'Therapy Plans',
-        was: { therapy: 'Respiratory physio for airway clearance. Pulmonary rehab referral to be made.' } },
+      { at: '2026-09-09T18:00', by: 'L. Okafor (Staff Nurse)', change: 'Therapies',
+        was: { therapies: 'PT: respiratory physio for airway clearance.\nPulmonary rehab referral to be made.' } },
     ],
   },
 
@@ -216,42 +155,23 @@ window.HV_PATIENTS = [
     edd: '',
     seed: {
       diagnosis:
-        'Recurrent falls with deconditioning and dehydration on admission. Query poor home circumstances.\n\nPMH: Alzheimer\'s dementia (moderate), atrial fibrillation, previous fractured wrist 2024.',
+        'Recurrent falls with deconditioning and dehydration on admission. Query inadequate home circumstances.\n\nPMHx: Alzheimer\'s dementia (moderate), atrial fibrillation, fractured wrist 2024.',
       nursing:
-        'Enhanced observation (1:1 overnight) — high falls risk, attempts to self-mobilise without frame.\nPressure area care 2-hourly, Waterlow 20. Grade 1 redness to sacrum, barrier cream applied.\nFull assistance with personal care. Becomes distressed early evening.',
-      nutrition:
-        'Full assistance at mealtimes. Food and fluid chart in place. Fortified diet plus supplements TDS. Dietitian reviewed 08/09.',
-      fluidRestriction: 'no',
-      therapy:
-        'Physio — sit to stand with assistance of 2. OT completing functional assessment for placement decision.',
+        'Enhanced observation, 1:1 overnight — high falls risk, attempts to self-mobilise without frame.\nFull assistance with personal care. Becomes distressed early evening; familiar staff help.\n\nRisk scores: Waterlow 20 — grade 1 redness to sacrum, barrier cream applied, repositioning 2-hourly. Falls risk — yes, 3 falls at home in 6 weeks. MUST completed, score 2.\nInfectious status: nil known. MRSA swab taken 02/09, next due 09/09 — OVERDUE, please send.\nDiet: full assistance at mealtimes. Food and fluid chart. Fortified diet plus supplements TDS, dietitian reviewed 08/09.',
+      therapies:
+        'PT: sit to stand with assistance of 2. Limited by cognition and fatigue.\nOT: completing functional assessment to inform placement decision. Joint session with PT planned.',
+      medical:
+        'Consultant review 09/09 (Dr Aldridge): no acute medical issue. Bloods normalised after rehydration.\nPlan — no further investigation. Medically fit, but discharge blocked pending safeguarding and placement.\nCapacity assessed as lacking for discharge destination; best interests process under way.',
       discharge:
-        'Not for discharge home. Safeguarding referral open, best interests meeting to be arranged.\nLikely 24-hour care placement — social worker allocated 09/09. No EDD until meeting held.',
-      risk: {
-        infectious: 'Nil known.',
-        falls: 'yes',
-        must: 'yes',
-        mrsaTaken: '2026-09-02',
-        mrsaDue: '2026-09-09',
-      },
+        'Not for discharge home. Safeguarding referral open, social worker allocated 09/09.\nLikely 24-hour care placement. Best interests meeting to be arranged — no EDD until held.\nPending: meeting date and attendees, family notified, placement search.',
     },
-    seedTasks: [
-      { text: 'Pressure area check and reposition', due: '2026-09-10', status: 'In progress' },
-      { text: 'Safeguarding referral — follow up with team', due: '2026-09-09', status: 'Outstanding' },
-      { text: 'MRSA swab overdue — send today', due: '2026-09-09', status: 'Outstanding' },
-      { text: 'Best interests meeting — confirm attendees', due: '2026-09-15', status: 'Outstanding' },
-    ],
-    seedHistory: [
-      { text: 'Dietitian referral and review', due: '2026-09-08', completedAt: '2026-09-08T11:20', by: 'D. Reid (Ward Sister)' },
-      { text: 'Waterlow reassessed — score 20', due: '2026-09-08', completedAt: '2026-09-08T08:05', by: 'M. Kaur (HCA)' },
-      { text: 'Safeguarding referral submitted', due: '2026-09-06', completedAt: '2026-09-06T16:40', by: 'J. Whitfield (Charge Nurse)' },
-    ],
     seedAudit: [
-      { at: '2026-09-10T06:45', by: 'M. Kaur (HCA)', change: 'Additional Nursing Information',
-        was: { nursing: 'Enhanced observation (1:1 overnight) — high falls risk.\nPressure area care 2-hourly, Waterlow 20.\nFull assistance with personal care.' } },
-      { at: '2026-09-09T15:30', by: 'D. Reid (Ward Sister)', change: 'Discharge Plans',
+      { at: '2026-09-10T06:45', by: 'M. Kaur (HCA)', change: 'Nursing',
+        was: { nursing: 'Enhanced observation, 1:1 overnight — high falls risk.\nFull assistance with personal care.\n\nRisk scores: Waterlow 20. Falls risk — yes. MUST completed, score 2.\nInfectious status: nil known. MRSA swab taken 02/09, next due 09/09.\nDiet: full assistance at mealtimes. Fortified diet plus supplements TDS.' } },
+      { at: '2026-09-09T15:30', by: 'D. Reid (Ward Sister)', change: 'Discharge Planning',
         was: { discharge: 'Not for discharge home. Safeguarding referral open. Awaiting social worker allocation.' } },
-      { at: '2026-09-09T10:05', by: 'S. Ahmed (Staff Nurse)', change: 'Therapy Plans',
-        was: { therapy: 'Physio — sit to stand with assistance of 2.' } },
+      { at: '2026-09-09T10:05', by: 'S. Ahmed (Staff Nurse)', change: 'Therapies',
+        was: { therapies: 'PT: sit to stand with assistance of 2.' } },
     ],
   },
 
@@ -268,38 +188,21 @@ window.HV_PATIENTS = [
     edd: '2026-09-19',
     seed: {
       diagnosis:
-        'Decompensated alcoholic liver disease with ascites. Ascitic drain removed 08/09.\n\nPMH: Alcohol dependence, previous variceal bleed 2023, hypertension.',
+        'Decompensated alcoholic liver disease with ascites. Ascitic drain removed 08/09.\n\nPMHx: Alcohol dependence, variceal bleed 2023, hypertension.',
       nursing:
-        'CIWA scoring 4-hourly, chlordiazepoxide reducing regime — day 4. Pabrinex as prescribed.\nDaily weights and abdominal girth. Strict fluid balance. Mobilising independently but unsteady.',
-      nutrition:
-        'High calorie, high protein diet. Dietitian reviewing. Thiamine and multivitamins prescribed. Salt restricted.',
-      fluidRestriction: 'yes',
-      therapy: 'Physio for deconditioning. Alcohol liaison team reviewing — engagement good.',
+        'CIWA scoring 4-hourly, chlordiazepoxide reducing regime — day 4. Pabrinex as prescribed.\nDaily weights and abdominal girth. Strict fluid balance — chart not always totalled at 24h, please ensure completed.\nMobilising independently but unsteady.\n\nRisk scores: Waterlow 13. Falls risk — yes, unsteady gait. MUST completed, score 2.\nInfectious status: nil known. MRSA swab taken 04/09, next due 11/09.\nDiet: high calorie, high protein, salt restricted. Thiamine and multivitamins. Dietitian reviewing.',
+      therapies:
+        'PT: mobility and deconditioning work, tolerating well.\nAlcohol liaison team reviewing — engagement good, attending sessions.',
+      medical:
+        'Ward round 10/09 (Dr Chen): girth reduced 6cm since drain. Bilirubin 68, falling. Albumin 28.\nPlan — continue spironolactone and furosemide, monitor U&Es alternate days. Repeat USS in one week.\nNot medically fit until ascites stable. Endoscopy surveillance to be arranged as outpatient.',
       discharge:
-        'Home alone. Not medically fit — awaiting resolution of ascites.\nAlcohol liaison to arrange community follow-up before discharge.',
-      risk: {
-        infectious: 'Nil known.',
-        falls: 'yes',
-        must: 'yes',
-        mrsaTaken: '2026-09-04',
-        mrsaDue: '2026-09-11',
-      },
+        'Home alone, first floor flat.\nPending: ascites stabilised, alcohol liaison community follow-up arranged, outpatient endoscopy booked, GP letter re monitoring.',
     },
-    seedTasks: [
-      { text: 'CIWA score — 4-hourly', due: '2026-09-10', status: 'In progress' },
-      { text: 'Daily weight and abdominal girth', due: '2026-09-10', status: 'Outstanding' },
-      { text: 'Fluid balance chart — ensure totalled at 24h', due: '2026-09-08', status: 'Blocked' },
-      { text: 'Alcohol liaison follow-up review', due: '2026-09-11', status: 'Awaiting review' },
-    ],
-    seedHistory: [
-      { text: 'Ascitic drain removed, site dressed', due: '2026-09-08', completedAt: '2026-09-08T13:00', by: 'D. Reid (Ward Sister)' },
-      { text: 'Dietitian referral submitted', due: '2026-09-06', completedAt: '2026-09-06T09:35', by: 'L. Okafor (Staff Nurse)' },
-    ],
     seedAudit: [
-      { at: '2026-09-10T04:20', by: 'J. Whitfield (Charge Nurse)', change: 'Additional Nursing Information',
-        was: { nursing: 'CIWA scoring 4-hourly, chlordiazepoxide reducing regime — day 3. Pabrinex as prescribed.\nDaily weights and abdominal girth. Strict fluid balance.' } },
-      { at: '2026-09-08T14:15', by: 'D. Reid (Ward Sister)', change: 'Diagnosis & Past Medical History',
-        was: { diagnosis: 'Decompensated alcoholic liver disease with ascites. Ascitic drain in situ.\n\nPMH: Alcohol dependence, previous variceal bleed 2023, hypertension.' } },
+      { at: '2026-09-10T04:20', by: 'J. Whitfield (Charge Nurse)', change: 'Nursing',
+        was: { nursing: 'CIWA scoring 4-hourly, chlordiazepoxide reducing regime — day 3. Pabrinex as prescribed.\nDaily weights and abdominal girth. Strict fluid balance.\n\nRisk scores: Waterlow 13. Falls risk — yes. MUST completed, score 2.\nInfectious status: nil known. MRSA swab taken 04/09, next due 11/09.\nDiet: high calorie, high protein, salt restricted.' } },
+      { at: '2026-09-08T14:15', by: 'Dr L. Chen (SHO)', change: 'Diagnosis and PMHx',
+        was: { diagnosis: 'Decompensated alcoholic liver disease with ascites. Ascitic drain in situ.\n\nPMHx: Alcohol dependence, variceal bleed 2023, hypertension.' } },
     ],
   },
 
@@ -316,37 +219,21 @@ window.HV_PATIENTS = [
     edd: '2026-09-16',
     seed: {
       diagnosis:
-        'CKD stage 4 with fluid overload. Responding to IV diuresis, now oral.\n\nPMH: Chronic kidney disease, heart failure, type 2 diabetes, hypertension.',
+        'CKD stage 4 with fluid overload. Responding to IV diuresis, now oral.\n\nPMHx: Chronic kidney disease, heart failure, type 2 diabetes, hypertension.',
       nursing:
-        'Daily weights, strict fluid balance — 1L restriction. Legs elevated when in chair.\nBilateral pitting oedema to knees, improving. Skin intact but fragile — emollient BD.',
-      nutrition: 'Low potassium, low salt diet. Renal dietitian reviewed 07/09. Appetite fair.',
-      fluidRestriction: 'yes',
-      therapy: 'Physio for mobility and stair practice — lives in first floor flat, no lift.',
+        'Daily weights, strict fluid balance — 1L restriction. Legs elevated when sitting out.\nBilateral pitting oedema to knees, improving. Skin intact but fragile — emollient BD, handle with care.\n\nRisk scores: Waterlow 16. Falls risk — yes. MUST completed.\nInfectious status: nil known. MRSA swab taken 03/09, next due 10/09 — due today.\nDiet: low potassium, low salt. Renal dietitian reviewed 07/09. Appetite fair.',
+      therapies:
+        'PT: mobility and stair practice — lives in a first floor flat with no lift, stair assessment booked.\nOT: to assess kitchen and bathroom, may need equipment before discharge.',
+      medical:
+        'Ward round 10/09 (Dr Nayar): weight down 5.1kg. Creatinine 246, eGFR 18 — stable for her baseline. K+ 4.8.\nPlan — continue oral furosemide 80mg OD. Renal team advised no dialysis planning at present, review in clinic.\nStop nephrotoxics. Avoid morphine — causes confusion.',
       discharge:
-        'Lives alone. Package of care to be restarted (was in place until July).\nCommunity matron referral sent 08/09. Needs stair assessment before discharge.',
-      risk: {
-        infectious: 'Nil known.',
-        falls: 'yes',
-        must: 'yes',
-        mrsaTaken: '2026-09-03',
-        mrsaDue: '2026-09-10',
-      },
+        'Lives alone. Package of care to be restarted — was in place until July.\nCommunity matron referral sent 08/09.\nPending: POC restart date from social services, PT stair assessment, OT equipment, renal clinic appointment.',
     },
-    seedTasks: [
-      { text: 'Daily weight and fluid balance review', due: '2026-09-10', status: 'Outstanding' },
-      { text: 'MRSA swab due today', due: '2026-09-10', status: 'Outstanding' },
-      { text: 'Confirm POC restart date with social services', due: '2026-09-12', status: 'In progress' },
-      { text: 'Physio stair assessment', due: '2026-09-13', status: 'Awaiting review' },
-    ],
-    seedHistory: [
-      { text: 'Community matron referral sent', due: '2026-09-08', completedAt: '2026-09-08T13:30', by: 'S. Ahmed (Staff Nurse)' },
-      { text: 'Renal dietitian review arranged', due: '2026-09-07', completedAt: '2026-09-07T10:15', by: 'L. Okafor (Staff Nurse)' },
-    ],
     seedAudit: [
-      { at: '2026-09-10T08:40', by: 'S. Ahmed (Staff Nurse)', change: 'Tasks',
-        was: {} },
-      { at: '2026-09-09T12:25', by: 'L. Okafor (Staff Nurse)', change: 'Discharge Plans',
-        was: { discharge: 'Lives alone. Package of care to be restarted (was in place until July).\nCommunity matron referral sent 08/09.' } },
+      { at: '2026-09-10T08:40', by: 'S. Ahmed (Staff Nurse)', change: 'Nursing',
+        was: { nursing: 'Daily weights, strict fluid balance — 1L restriction. Legs elevated when sitting out.\nBilateral pitting oedema to knees. Skin fragile — emollient BD.\n\nRisk scores: Waterlow 16. Falls risk — yes. MUST completed.\nInfectious status: nil known. MRSA swab taken 03/09, next due 10/09.\nDiet: low potassium, low salt. Appetite fair.' } },
+      { at: '2026-09-09T12:25', by: 'L. Okafor (Staff Nurse)', change: 'Discharge Planning',
+        was: { discharge: 'Lives alone. Package of care to be restarted — was in place until July.\nCommunity matron referral sent 08/09.' } },
     ],
   },
 
@@ -363,40 +250,23 @@ window.HV_PATIENTS = [
     edd: '2026-09-22',
     seed: {
       diagnosis:
-        'Left MCA ischaemic stroke, day 6. Right sided weakness and expressive dysphasia.\n\nPMH: Atrial fibrillation, hypertension, previous MI 2016.',
+        'Left MCA ischaemic stroke, day 6. Right sided weakness and expressive dysphasia.\n\nPMHx: Atrial fibrillation, hypertension, myocardial infarction 2016.',
       nursing:
-        'Right arm and leg weakness — assistance of 2 for transfers with hoist. Positioning chart in use.\nExpressive dysphasia — use communication board, allow time. Continent with 2-hourly toileting.\nPressure area care 2-hourly, Waterlow 17.',
-      nutrition:
-        'SALT assessed 08/09 — Level 4 puree diet and Level 2 mildly thick fluids. Full assistance required, sit upright 90°.\nSupervise all oral intake. NG feed overnight as supplement.',
-      fluidRestriction: 'no',
-      therapy:
-        'Stroke MDT. Physio daily — sitting balance improving. SALT reviewing swallow twice weekly.\nOT assessing seating and upper limb function.',
+        'Right arm and leg weakness — assistance of 2 for transfers with hoist. Positioning chart in use.\nExpressive dysphasia — use communication board, allow time. Continent with 2-hourly toileting.\nWife visiting daily and keen to be involved in care.\n\nRisk scores: Waterlow 17 — repositioning 2-hourly, skin intact. Falls risk — yes. MUST completed, score 2.\nInfectious status: nil known, standard precautions. MRSA swab taken 05/09, next due 12/09.\nDiet: SALT assessed 08/09 — Level 4 puree and Level 2 mildly thick fluids. Full assistance, sit upright 90°, supervise all intake. Overnight NG feed as supplement.',
+      therapies:
+        'Stroke MDT weekly. PT: daily — sitting balance improving, standing with 2 and frame.\nSALT: reviewing swallow twice weekly, next 11/09.\nOT: assessing seating and upper limb function, splint under consideration.',
+      medical:
+        'Stroke consultant review 09/09 (Dr Whitmore): CT confirms left MCA infarct, no haemorrhagic transformation.\nPlan — apixaban started day 5 for AF. BP target below 140 systolic, amlodipine added. Statin commenced.\nSwallow remains unsafe for normal diet; continue modified consistency per SALT.',
       discharge:
-        'For stroke rehabilitation unit transfer when bed available — referral accepted 09/09.\nWife visiting daily, keen to be involved in care.',
-      risk: {
-        infectious: 'Nil known. Standard precautions.',
-        falls: 'yes',
-        must: 'yes',
-        mrsaTaken: '2026-09-05',
-        mrsaDue: '2026-09-12',
-      },
+        'For transfer to the stroke rehabilitation unit when a bed is available — referral accepted 09/09.\nPending: bed availability, transfer letter, wife updated on likely timescale.',
     },
-    seedTasks: [
-      { text: 'Positioning and pressure area care 2-hourly', due: '2026-09-10', status: 'In progress' },
-      { text: 'SALT swallow review', due: '2026-09-11', status: 'Awaiting review' },
-      { text: 'Chase stroke rehab bed availability', due: '2026-09-11', status: 'Outstanding' },
-      { text: 'Weekly weight', due: '2026-09-13', status: 'Outstanding' },
-    ],
-    seedHistory: [
-      { text: 'SALT assessment completed', due: '2026-09-08', completedAt: '2026-09-08T14:50', by: 'D. Reid (Ward Sister)' },
-      { text: 'Stroke rehab referral submitted', due: '2026-09-08', completedAt: '2026-09-08T09:20', by: 'S. Ahmed (Staff Nurse)' },
-      { text: 'NG tube sited and position confirmed', due: '2026-09-06', completedAt: '2026-09-06T18:30', by: 'J. Whitfield (Charge Nurse)' },
-    ],
     seedAudit: [
-      { at: '2026-09-09T17:10', by: 'D. Reid (Ward Sister)', change: 'Discharge Plans',
-        was: { discharge: 'For stroke rehabilitation unit transfer when bed available — referral submitted 08/09.' } },
-      { at: '2026-09-08T15:05', by: 'S. Ahmed (Staff Nurse)', change: 'Nutrition',
-        was: { nutrition: 'Nil by mouth pending SALT assessment. NG feed in progress.', fluidRestriction: 'no' } },
+      { at: '2026-09-09T17:10', by: 'D. Reid (Ward Sister)', change: 'Discharge Planning',
+        was: { discharge: 'For transfer to the stroke rehabilitation unit when a bed is available — referral submitted 08/09.' } },
+      { at: '2026-09-09T13:00', by: 'Dr S. Whitmore (Consultant)', change: 'Medical / Surgical',
+        was: { medical: 'Stroke consultant review 08/09: awaiting repeat CT before starting anticoagulation.' } },
+      { at: '2026-09-08T15:05', by: 'S. Ahmed (Staff Nurse)', change: 'Nursing',
+        was: { nursing: 'Right arm and leg weakness — assistance of 2 for transfers with hoist.\nExpressive dysphasia — use communication board.\n\nRisk scores: Waterlow 17. Falls risk — yes. MUST completed, score 2.\nInfectious status: nil known. MRSA swab taken 05/09, next due 12/09.\nDiet: nil by mouth pending SALT assessment. NG feed in progress.' } },
     ],
   },
 ];
