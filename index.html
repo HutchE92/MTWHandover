@@ -3,147 +3,126 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MTW Nursing Handover — Proof of Concept</title>
-<link rel="stylesheet" href="assets/css/shell.css">
-<link rel="stylesheet" href="assets/css/handover.css">
+<title>MTW Nursing Handover — Options</title>
+<style>
+  :root {
+    --blue: #005eb8;
+    --blue-dark: #003087;
+    --purple: #4b3f9e;
+    --lilac-pale: #f1eefb;
+    --lilac-line: #ddd6f3;
+    --ink: #212b32;
+    --ink-soft: #4c6272;
+    --line: #dfe4e8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+    background: #f7f9fb;
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+  }
+  .wrap { width: 100%; max-width: 760px; }
+
+  h1 { margin: 0 0 6px; font-size: 24px; letter-spacing: -.02em; color: var(--blue-dark); }
+  .lede { margin: 0 0 6px; color: var(--ink-soft); font-size: 15px; }
+
+  .warn {
+    margin: 18px 0 26px;
+    padding: 10px 14px;
+    background: #fff6e5;
+    border: 1px solid #e8c88a;
+    border-left: 4px solid #ffb81c;
+    border-radius: 6px;
+    font-size: 13.5px;
+    color: #6b4000;
+  }
+  .warn strong { color: #4a2c00; }
+
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+
+  .card {
+    display: block;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color .14s, box-shadow .14s, transform .14s;
+  }
+  .card:hover {
+    border-color: var(--blue);
+    box-shadow: 0 6px 20px rgba(0, 48, 135, .12);
+    transform: translateY(-2px);
+  }
+
+  .card__tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--purple);
+    background: var(--lilac-pale);
+    border: 1px solid var(--lilac-line);
+    border-radius: 20px;
+    padding: 2px 10px;
+    margin-bottom: 10px;
+  }
+  .card h2 { margin: 0 0 6px; font-size: 18px; color: var(--blue-dark); letter-spacing: -.01em; }
+  .card p { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+  .card__go { margin-top: 14px; font-size: 13px; font-weight: 600; color: var(--blue); }
+
+  footer { margin-top: 26px; font-size: 12.5px; color: var(--ink-soft); }
+  footer code {
+    background: #eef2f5;
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 12px;
+  }
+</style>
 </head>
 <body>
+<div class="wrap">
 
-<!-- The simulated EPR. The background is a static screenshot of the host
-     system; the tool renders inside .epr__region, aligned to that screenshot's
-     work area. Press Shift+A for the alignment overlay. -->
-<div class="epr-stage">
-  <div class="epr" id="epr">
+  <h1>MTW Nursing Handover</h1>
+  <p class="lede">Proof of concept — two design options for review.</p>
 
-    <!-- The host EPR's tab strip, redrawn over the screenshot so "Handover"
-         can be the selected tab. Laid out in the background image's own pixel
-         coordinates and scaled to match it. Decorative: not interactive. -->
-    <div class="epr__chrome" id="chrome" aria-hidden="true">
-      <div class="eprTabs" id="eprTabs"></div>
-    </div>
-
-    <div class="epr__region" id="region">
-     <!-- Rendered at a fixed design width and scaled to the work area, so the
-          board keeps the same proportions as the EPR screenshot around it. -->
-     <div class="epr__fit" id="fit">
-
-      <div class="hv">
-
-        <header class="hv__bar">
-          <div class="hv__brand">
-            <span class="hv__title">Nursing Handover</span>
-            <span class="hv__ward" id="wardLabel"></span>
-          </div>
-
-          <div class="hv__filters">
-            <label>Ward
-              <select id="wardSelect">
-                <option>Ward 12 — General Medicine</option>
-                <option>Ward 14 — Acute Medical Unit</option>
-                <option>Ward 21 — Frailty</option>
-              </select>
-            </label>
-          </div>
-
-          <div class="hv__barRight">
-            <span class="hv__count" id="patientCount"></span>
-            <span class="hv__demoTag" title="No real patient data is held in this tool.">SYNTHETIC DATA</span>
-            <span class="hv__saved" id="savedFlag" hidden>Saved</span>
-          </div>
-        </header>
-
-        <div class="hv__scroll">
-          <table class="hv__table">
-            <colgroup>
-              <col class="col-patient">
-              <col class="col-dx">
-              <col class="col-nursing">
-              <col class="col-tasks">
-              <col class="col-nutrition">
-              <col class="col-risk">
-              <col class="col-therapy">
-              <col class="col-discharge">
-            </colgroup>
-            <thead>
-              <tr>
-                <th scope="col">Patient Details</th>
-                <th scope="col">Diagnosis &amp; Past Medical History</th>
-                <th scope="col">Additional Nursing Information</th>
-                <th scope="col">Tasks</th>
-                <th scope="col">Nutrition</th>
-                <th scope="col">Risk Assessments</th>
-                <th scope="col">Therapy Plans</th>
-                <th scope="col">Discharge Plans</th>
-              </tr>
-            </thead>
-            <tbody id="rows"></tbody>
-          </table>
-        </div>
-
-        <footer class="hv__actions">
-          <label class="hv__user">Signed in as
-            <select id="userSelect" aria-label="Current user"></select>
-          </label>
-          <span class="hv__spacer"></span>
-          <button type="button" class="btn" id="btnPrint">Print Handover</button>
-          <button type="button" class="btn btn--danger" id="btnReset">Reset Demo Data</button>
-        </footer>
-
-      </div>
-
-     </div><!-- /.epr__fit -->
-    </div><!-- /.epr__region -->
-  </div><!-- /.epr -->
-</div><!-- /.epr-stage -->
-
-
-<!-- Handover history: full audit trail of row snapshots -->
-<dialog class="modal" id="handoverModal">
-  <div class="modal__inner">
-    <header class="modal__head">
-      <div>
-        <h2 id="handoverTitle">Handover History</h2>
-        <div class="modal__sub" id="handoverSub"></div>
-      </div>
-      <button type="button" class="modal__x" data-close aria-label="Close">&times;</button>
-    </header>
-    <div class="modal__body" id="handoverBody"></div>
-    <footer class="modal__foot">
-      <button type="button" class="btn btn--primary" data-close>Close</button>
-    </footer>
+  <div class="warn">
+    <strong>Synthetic data only.</strong> Every patient shown is fictional, with
+    NHS numbers from the <code>999 000 xxxx</code> test range. Neither option
+    holds real patient data, and neither is suitable for one.
   </div>
-</dialog>
 
-<!-- Task history: completed tasks -->
-<dialog class="modal" id="taskModal">
-  <div class="modal__inner">
-    <header class="modal__head">
-      <div>
-        <h2 id="taskTitle">Task History</h2>
-        <div class="modal__sub" id="taskSub"></div>
-      </div>
-      <button type="button" class="modal__x" data-close aria-label="Close">&times;</button>
-    </header>
-    <div class="modal__body" id="taskBody"></div>
-    <footer class="modal__foot">
-      <button type="button" class="btn btn--primary" data-close>Close</button>
-    </footer>
+  <div class="grid">
+    <a class="card" href="option-a/">
+      <span class="card__tag">Option A</span>
+      <h2>Original layout</h2>
+      <p>Eight columns with per-patient tasks, risk assessments and a full
+         handover audit trail, shown inside the EPR.</p>
+      <div class="card__go">Open Option A &rarr;</div>
+    </a>
+
+    <a class="card" href="option-b/">
+      <span class="card__tag">Option B</span>
+      <h2>Alternative layout</h2>
+      <p>A variant of the same tool, for comparison against Option A.</p>
+      <div class="card__go">Open Option B &rarr;</div>
+    </a>
   </div>
-</dialog>
 
-<!-- Alignment helper (Shift+A) -->
-<div class="align" id="align" hidden>
-  <div class="align__head">Region alignment</div>
-  <label>left <input type="number" id="alLeft" step="0.05"> %</label>
-  <label>top <input type="number" id="alTop" step="0.05"> %</label>
-  <label>right <input type="number" id="alRight" step="0.05"> %</label>
-  <label>bottom <input type="number" id="alBottom" step="0.05"> %</label>
-  <button type="button" class="btn" id="alCopy">Copy CSS</button>
-  <div class="align__hint">Shift+A to hide</div>
+  <footer>
+    Each option is self-contained and keeps its own saved entries, so changes
+    made in one never appear in the other.
+  </footer>
+
 </div>
-
-<script src="assets/js/config.js"></script>
-<script src="assets/js/data.js"></script>
-<script src="assets/js/app.js"></script>
 </body>
 </html>

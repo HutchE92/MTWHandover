@@ -15,6 +15,22 @@ Sunrise) so it can be reviewed in context.
 > no authentication. Nothing entered here is protected, so it must never be
 > used with real patient-identifiable data.
 
+## Two options
+
+The repository holds two independent copies of the tool for side-by-side
+review, plus a landing page at the root that links to both:
+
+| Path | |
+| --- | --- |
+| `option-a/` | The original layout |
+| `option-b/` | An alternative, for comparison |
+
+They are deliberately self-contained rather than sharing code: each can be
+changed without any risk of affecting the other, and whichever is not taken
+forward is simply deleted. Because both are served from the same origin they
+use **different `localStorage` keys**, so entries and audit history never bleed
+between them — keep that in mind if you copy one to make a third.
+
 ## What it does
 
 One row per patient, with these columns left to right:
@@ -49,8 +65,20 @@ No build step and no dependencies — it is plain HTML, CSS and JavaScript.
 python3 -m http.server 8765
 ```
 
-Then open <http://localhost:8765>. Opening `index.html` directly via `file://`
-will not work: the browser blocks the relative asset loads.
+Then open <http://localhost:8765> for the landing page, or go straight to
+<http://localhost:8765/option-a/> and <http://localhost:8765/option-b/> —
+one server serves both, so they can be compared in two browser tabs.
+
+Opening `index.html` directly via `file://` will not work: the browser blocks
+the relative asset loads.
+
+On this machine the repository sits inside OneDrive CloudStorage, where
+sandboxed processes cannot call `getcwd()`. If the command above fails with
+`PermissionError`, run it from your home directory instead:
+
+```bash
+python3 -m http.server 8765 --directory "/Users/edward.hutchison/Library/CloudStorage/OneDrive-AlteraDigitalHealth/AI/MTW Handover"
+```
 
 ## Deploying to GitHub Pages
 
@@ -96,12 +124,15 @@ backend to resolve:
 ## Layout
 
 ```
-index.html
-assets/
-  css/shell.css       EPR frame, work-area alignment, modals
-  css/handover.css    the tool itself
-  js/config.js        storage key, users, region insets
-  js/data.js          synthetic patients (the only patient-shaped data)
-  js/app.js           rendering, persistence, audit trail
-  img/epr-background.png
+index.html              landing page linking to both options
+option-a/
+  index.html
+  assets/
+    css/shell.css       EPR frame, tab strip, work-area alignment, modals
+    css/handover.css    the tool itself
+    js/config.js        storage key, users, region insets, EPR tabs/patches
+    js/data.js          synthetic patients (the only patient-shaped data)
+    js/app.js           rendering, persistence, audit trail
+    img/epr-background.png
+option-b/               same structure, independent copy
 ```

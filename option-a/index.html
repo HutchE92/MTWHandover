@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MTW Nursing Handover — Option A</title>
+<link rel="stylesheet" href="assets/css/shell.css">
+<link rel="stylesheet" href="assets/css/handover.css">
+</head>
+<body>
+
+<!-- The simulated EPR. The background is a static screenshot of the host
+     system; the tool renders inside .epr__region, aligned to that screenshot's
+     work area. Press Shift+A for the alignment overlay. -->
+<div class="epr-stage">
+  <div class="epr" id="epr">
+
+    <!-- The host EPR's tab strip, redrawn over the screenshot so "Handover"
+         can be the selected tab. Laid out in the background image's own pixel
+         coordinates and scaled to match it. Decorative: not interactive. -->
+    <div class="epr__chrome" id="chrome" aria-hidden="true">
+      <div class="eprTabs" id="eprTabs"></div>
+    </div>
+
+    <div class="epr__region" id="region">
+     <!-- Rendered at a fixed design width and scaled to the work area, so the
+          board keeps the same proportions as the EPR screenshot around it. -->
+     <div class="epr__fit" id="fit">
+
+      <div class="hv">
+
+        <header class="hv__bar">
+          <div class="hv__brand">
+            <span class="hv__title">Nursing Handover</span>
+            <span class="hv__ward" id="wardLabel"></span>
+          </div>
+
+          <div class="hv__filters">
+            <label>Ward
+              <select id="wardSelect">
+                <option>Ward 12 — General Medicine</option>
+                <option>Ward 14 — Acute Medical Unit</option>
+                <option>Ward 21 — Frailty</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="hv__barRight">
+            <span class="hv__count" id="patientCount"></span>
+            <span class="hv__demoTag" title="No real patient data is held in this tool.">SYNTHETIC DATA</span>
+            <span class="hv__saved" id="savedFlag" hidden>Saved</span>
+          </div>
+        </header>
+
+        <div class="hv__scroll">
+          <table class="hv__table">
+            <colgroup>
+              <col class="col-patient">
+              <col class="col-dx">
+              <col class="col-nursing">
+              <col class="col-tasks">
+              <col class="col-nutrition">
+              <col class="col-risk">
+              <col class="col-therapy">
+              <col class="col-discharge">
+            </colgroup>
+            <thead>
+              <tr>
+                <th scope="col">Patient Details</th>
+                <th scope="col">Diagnosis &amp; Past Medical History</th>
+                <th scope="col">Additional Nursing Information</th>
+                <th scope="col">Tasks</th>
+                <th scope="col">Nutrition</th>
+                <th scope="col">Risk Assessments</th>
+                <th scope="col">Therapy Plans</th>
+                <th scope="col">Discharge Plans</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+
+        <footer class="hv__actions">
+          <label class="hv__user">Signed in as
+            <select id="userSelect" aria-label="Current user"></select>
+          </label>
+          <span class="hv__spacer"></span>
+          <button type="button" class="btn" id="btnPrint">Print Handover</button>
+          <button type="button" class="btn btn--danger" id="btnReset">Reset Demo Data</button>
+        </footer>
+
+      </div>
+
+     </div><!-- /.epr__fit -->
+    </div><!-- /.epr__region -->
+  </div><!-- /.epr -->
+</div><!-- /.epr-stage -->
+
+
+<!-- Handover history: full audit trail of row snapshots -->
+<dialog class="modal" id="handoverModal">
+  <div class="modal__inner">
+    <header class="modal__head">
+      <div>
+        <h2 id="handoverTitle">Handover History</h2>
+        <div class="modal__sub" id="handoverSub"></div>
+      </div>
+      <button type="button" class="modal__x" data-close aria-label="Close">&times;</button>
+    </header>
+    <div class="modal__body" id="handoverBody"></div>
+    <footer class="modal__foot">
+      <button type="button" class="btn btn--primary" data-close>Close</button>
+    </footer>
+  </div>
+</dialog>
+
+<!-- Task history: completed tasks -->
+<dialog class="modal" id="taskModal">
+  <div class="modal__inner">
+    <header class="modal__head">
+      <div>
+        <h2 id="taskTitle">Task History</h2>
+        <div class="modal__sub" id="taskSub"></div>
+      </div>
+      <button type="button" class="modal__x" data-close aria-label="Close">&times;</button>
+    </header>
+    <div class="modal__body" id="taskBody"></div>
+    <footer class="modal__foot">
+      <button type="button" class="btn btn--primary" data-close>Close</button>
+    </footer>
+  </div>
+</dialog>
+
+<!-- Alignment helper (Shift+A) -->
+<div class="align" id="align" hidden>
+  <div class="align__head">Region alignment</div>
+  <label>left <input type="number" id="alLeft" step="0.05"> %</label>
+  <label>top <input type="number" id="alTop" step="0.05"> %</label>
+  <label>right <input type="number" id="alRight" step="0.05"> %</label>
+  <label>bottom <input type="number" id="alBottom" step="0.05"> %</label>
+  <button type="button" class="btn" id="alCopy">Copy CSS</button>
+  <div class="align__hint">Shift+A to hide</div>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
