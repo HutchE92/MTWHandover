@@ -150,6 +150,10 @@
 }
 .hv__table thead th + th { border-left: 1px solid #d3e0ee; }
 
+/* Opts a run of text out of an uppercasing parent, so abbreviations like
+   PMHx keep the case they were written in. */
+.keepCase { text-transform: none; }
+
 .hv__table td {
   padding: 9px;
   vertical-align: top;

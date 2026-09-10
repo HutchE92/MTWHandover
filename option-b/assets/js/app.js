@@ -27,8 +27,10 @@
      three can never drift apart. */
   const COLUMNS = [
     {
+      /* Headers are uppercased in CSS. Text in {braces} keeps the case it is
+         written in, so PMHx renders with a lower-case x. */
       field: 'diagnosis',
-      label: 'Diagnosis and PMHx',
+      label: 'Diagnosis and PMH{x}',
       width: '17%',
       placeholder: 'Presenting diagnosis, treatment to date, past medical history…',
     },
@@ -58,7 +60,10 @@
     },
   ];
 
-  const FIELD_LABELS = Object.fromEntries(COLUMNS.map((c) => [c.field, c.label]));
+  /** A label with its case markers stripped, for plain-text use. */
+  const plainLabel = (label) => label.replace(/[{}]/g, '');
+
+  const FIELD_LABELS = Object.fromEntries(COLUMNS.map((c) => [c.field, plainLabel(c.label)]));
   FIELD_LABELS.edd = 'Estimated date of discharge';
 
   /* --- Utilities ---------------------------------------------------------- */
@@ -309,6 +314,23 @@
 
   /* --- Render ------------------------------------------------------------- */
 
+  /**
+   * Render a label, honouring {braces} as case-preserved spans. Used for both
+   * the table header and the audit snapshot, which are both uppercased in CSS.
+   */
+  function labelNodes(label) {
+    const nodes = [];
+    for (const part of label.split(/(\{[^}]*\})/)) {
+      if (!part) continue;
+      if (part.startsWith('{') && part.endsWith('}')) {
+        nodes.push(el('span', { class: 'keepCase', text: part.slice(1, -1) }));
+      } else {
+        nodes.push(document.createTextNode(part));
+      }
+    }
+    return nodes;
+  }
+
   /** Build the colgroup and header from COLUMNS so they cannot drift from the
       cells or the audit order. */
   function renderHead() {
@@ -324,7 +346,7 @@
       const col = el('col');
       col.style.width = c.width;
       cols.appendChild(col);
-      head.appendChild(el('th', { scope: 'col', text: c.label }));
+      head.appendChild(el('th', { scope: 'col' }, labelNodes(c.label)));
     }
   }
 
@@ -424,7 +446,7 @@
   function snapshotView(snap) {
     const dl = el('dl', { class: 'snap' });
     const add = (label, value) => {
-      dl.appendChild(el('dt', { text: label }));
+      dl.appendChild(el('dt', {}, labelNodes(label)));
       dl.appendChild(el('dd', { text: value || '' }));
     };
 
