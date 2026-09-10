@@ -75,6 +75,16 @@ body {
   pointer-events: none;
 }
 
+/* Paints over a region of the screenshot using pixels copied from elsewhere in
+   the same image, so the fill matches the underlying gradient exactly.
+   Positioned and offset by JS from config. */
+.eprPatch {
+  position: absolute;
+  background-image: url("../img/epr-background.png");
+  background-size: 1920px 1243px;
+  background-repeat: no-repeat;
+}
+
 /* Tab strip occupies y 227–248 in the screenshot: white ground, a grey rule
    along the bottom, and tabs sitting on that rule. */
 .eprTabs {

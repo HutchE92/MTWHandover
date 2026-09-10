@@ -875,6 +875,22 @@
     }
   }
 
+  /** Paint over regions of the screenshot we don't want shown. */
+  function renderEprPatches() {
+    const chrome = $('#chrome');
+    if (!chrome) return;
+    for (const p of CFG.eprPatches || []) {
+      const patch = el('div', { class: 'eprPatch', title: p.label });
+      patch.style.left = p.x + 'px';
+      patch.style.top = p.y + 'px';
+      patch.style.width = p.w + 'px';
+      patch.style.height = p.h + 'px';
+      /* Sample the same rows from a text-free column further along the bar. */
+      patch.style.backgroundPosition = `-${p.from}px -${p.y}px`;
+      chrome.appendChild(patch);
+    }
+  }
+
   /* --- Fit the board to the EPR work area --------------------------------- */
 
   /**
@@ -912,6 +928,7 @@
   wire();
   wireAlignment();
   renderEprTabs();
+  renderEprPatches();
   fitToRegion();
 
   let fitTimer = null;

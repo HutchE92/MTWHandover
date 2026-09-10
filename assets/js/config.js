@@ -20,6 +20,15 @@ window.HV_CONFIG = {
   ],
   eprSelectedTab: 'Handover',
 
+  /* Regions of the background screenshot to paint over, in the image's native
+     1920x1243 pixel coordinates. Each patch is filled with real pixels copied
+     from `from` — a text-free column of the same rows — so the fill matches
+     the underlying gradient exactly instead of approximating it.
+     The title bar is horizontally uniform, which is what makes this work. */
+  eprPatches: [
+    { label: 'address bar URL', x: 904, y: 4, w: 142, h: 20, from: 758 },
+  ],
+
   /* There is no authentication in a static proof of concept, so the audit
      trail attributes changes to whoever is selected here. In a real
      deployment this would come from the EPR session. */
