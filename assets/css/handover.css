@@ -247,17 +247,18 @@
   padding: 6px 7px;
   border: 1px solid transparent;
   border-radius: var(--radius);
-  background: #f4f7f9;
+  background: transparent;
   resize: vertical;
   line-height: 1.45;
   /* Height is set to fit content by autosize() so nothing is hidden — a
      handover board must never clip clinical detail. */
   overflow-y: hidden;
 }
-.ta:hover { background: #eef3f7; }
+/* No fill, so editability is signalled by a border on hover and a ring on
+   focus rather than by a background wash. */
+.ta:hover { border-color: #c9d8e6; }
 .ta:focus {
   outline: none;
-  background: #fff;
   border-color: var(--blue-bright);
   box-shadow: 0 0 0 3px rgba(0, 114, 206, .14);
 }
