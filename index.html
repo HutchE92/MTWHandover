@@ -14,6 +14,14 @@
      work area. Press Shift+A for the alignment overlay. -->
 <div class="epr-stage">
   <div class="epr" id="epr">
+
+    <!-- The host EPR's tab strip, redrawn over the screenshot so "Handover"
+         can be the selected tab. Laid out in the background image's own pixel
+         coordinates and scaled to match it. Decorative: not interactive. -->
+    <div class="epr__chrome" id="chrome" aria-hidden="true">
+      <div class="eprTabs" id="eprTabs"></div>
+    </div>
+
     <div class="epr__region" id="region">
      <!-- Rendered at a fixed design width and scaled to the work area, so the
           board keeps the same proportions as the EPR screenshot around it. -->

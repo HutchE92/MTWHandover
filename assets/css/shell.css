@@ -52,6 +52,75 @@ body {
   background-size: 100% 100%;
   background-repeat: no-repeat;
   box-shadow: 0 0 40px rgba(0, 0, 0, .6);
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------------
+   Simulated EPR chrome drawn over the screenshot.
+
+   Laid out at the background image's intrinsic size (1920x1243) and scaled to
+   whatever the .epr box currently measures, so pixel coordinates taken from
+   the screenshot stay accurate at any window size.
+   --------------------------------------------------------------------------- */
+
+.epr__chrome {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1243px;
+  transform: scale(var(--chrome-scale, 1));
+  transform-origin: top left;
+  /* Decorative — must never swallow clicks meant for the tool. */
+  pointer-events: none;
+}
+
+/* Tab strip occupies y 227–248 in the screenshot: white ground, a grey rule
+   along the bottom, and tabs sitting on that rule. */
+.eprTabs {
+  position: absolute;
+  left: 0;
+  top: 227px;
+  width: 1920px;
+  height: 22px;
+  padding-left: 2px;
+  display: flex;
+  align-items: flex-end;
+  background: #fff;
+  border-bottom: 1px solid #959595;
+  font-family: Tahoma, Verdana, "Segoe UI", sans-serif;
+  /* Calibrated against the screenshot's own tab widths, e.g. "Results" 61px
+     and "Clinical Summary" 114px at the image's native 1920px width. */
+  font-size: 12.5px;
+  line-height: 1;
+  color: #1a1a1a;
+}
+
+.eprTab {
+  height: 20px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  margin-right: 1px;
+  white-space: nowrap;
+  border: 1px solid #c0c0c0;
+  border-bottom: 0;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(180deg, #e6e6e6 0%, #e2e2e2 76%, #cdcdcd 88%, #b4b4b4 100%);
+}
+
+/* The selected tab is white and 1px taller, so it breaks the strip's bottom
+   rule and reads as continuous with the content below. */
+.eprTab--selected {
+  height: 21px;
+  /* The host gives its selected tab noticeably wider padding — the screenshot's
+     "Tracking Board" tab is 119px where its text alone accounts for ~104px. */
+  padding: 0 17px;
+  margin-bottom: -1px;
+  background: #fff;
+  border-color: #959595;
+  position: relative;
+  z-index: 1;
 }
 
 .epr__region {

@@ -860,6 +860,21 @@
     });
   }
 
+  /* --- Simulated EPR chrome ----------------------------------------------- */
+
+  /** Redraw the host EPR's tab strip so "Handover" is the selected tab. */
+  function renderEprTabs() {
+    const strip = $('#eprTabs');
+    if (!strip) return;
+    strip.textContent = '';
+    for (const label of CFG.eprTabs) {
+      strip.appendChild(el('div', {
+        class: 'eprTab' + (label === CFG.eprSelectedTab ? ' eprTab--selected' : ''),
+        text: label,
+      }));
+    }
+  }
+
   /* --- Fit the board to the EPR work area --------------------------------- */
 
   /**
@@ -879,6 +894,14 @@
     fit.style.setProperty('--fit-scale', scale);
     fit.style.height = region.clientHeight / scale + 'px';
 
+    /* The chrome overlay is drawn in the screenshot's own pixel coordinates,
+       so it scales by the ratio of the rendered frame to the image width. */
+    const epr = $('#epr');
+    const chrome = $('#chrome');
+    if (epr && chrome) {
+      chrome.style.setProperty('--chrome-scale', epr.clientWidth / 1920);
+    }
+
     autosizeAll(fit);
   }
 
@@ -888,6 +911,7 @@
   render();
   wire();
   wireAlignment();
+  renderEprTabs();
   fitToRegion();
 
   let fitTimer = null;

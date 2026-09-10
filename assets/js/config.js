@@ -10,6 +10,16 @@ window.HV_CONFIG = {
 
   taskStatuses: ['Outstanding', 'In progress', 'Awaiting review', 'Blocked'],
 
+  /* The host EPR's tab strip is redrawn over the background screenshot so that
+     "Handover" can appear as the selected tab. Labels match the screenshot,
+     with Handover inserted second. */
+  eprTabs: [
+    'Tracking Board', 'Handover', 'Results', 'Orders', 'Documents', 'Flowsheets',
+    'Clinical Summary', 'Timeline', 'Patient Info', 'Reporting', 'Visit Record Review',
+    'SDM', 'Referral List', 'EDMS', 'Clinical Viewer', 'SCR',
+  ],
+  eprSelectedTab: 'Handover',
+
   /* There is no authentication in a static proof of concept, so the audit
      trail attributes changes to whoever is selected here. In a real
      deployment this would come from the EPR session. */
