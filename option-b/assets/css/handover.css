@@ -275,6 +275,88 @@
 }
 .dt:focus { outline: none; border-color: var(--blue-bright); box-shadow: 0 0 0 3px rgba(0, 114, 206, .14); }
 
+/* --- Structured strip at the foot of the Nursing column ------------------- */
+
+.nf {
+  margin-top: 7px;
+  padding-top: 6px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Label and control share a line; wraps only if genuinely out of room. */
+.nf__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px 6px;
+}
+
+/* Paired controls use a two-column grid rather than a flex row, so each takes
+   exactly half the width and cannot wrap unpredictably as labels change. */
+.nf__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px 6px;
+}
+.nf__cell { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.nf__cell--inline { flex-direction: row; align-items: center; gap: 4px; }
+
+.nf__label,
+.nf__head,
+.nf__mini {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+.nf__label,
+.nf__head { color: var(--purple); }
+
+/* Takes the rest of its row, and starts at one line high. min-width:0 is
+   required: a textarea's intrinsic width comes from its `cols`, which would
+   otherwise stop it shrinking to sit beside its label and force a wrap. */
+.ta--mini {
+  flex: 1 1 100px;
+  min-width: 0;
+  min-height: 21px;
+  padding: 3px 6px;
+  width: auto;
+}
+
+.nf .dt { width: 100%; }
+
+/* --- Yes / No ------------------------------------------------------------- */
+
+.yn { display: inline-flex; border: 1px solid var(--line); border-radius: 5px; overflow: hidden; background: #fff; }
+
+.yn__opt {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: var(--editable);
+  font-weight: 600;
+  color: var(--ink-soft);
+  padding: 2px 8px;
+  background: #fff;
+  transition: background .12s, color .12s;
+}
+.yn__opt + .yn__opt { border-left: 1px solid var(--line); }
+.yn__opt input { position: absolute; opacity: 0; pointer-events: none; }
+.yn__opt:hover { background: var(--blue-pale); }
+
+/* The selected answer is marked in the palette's own blue, whichever it is. */
+.yn__opt:has(input:checked) {
+  background: var(--blue);
+  color: #fff;
+  font-weight: 700;
+}
+.yn__opt:has(input:focus-visible) { box-shadow: inset 0 0 0 2px var(--blue-bright); }
+
 /* --- Buttons -------------------------------------------------------------- */
 
 .btn {

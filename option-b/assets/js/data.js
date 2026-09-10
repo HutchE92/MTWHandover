@@ -6,10 +6,11 @@
    so format validation behaves realistically while being unable to match a
    real patient. Hospital numbers are invented.
 
-   Option B uses five free-text columns instead of Option A's eight mixed
-   columns. Risk scores, infectious status, MRSA swab dates and diet all live
-   inside `nursing` here rather than in a separate Risk Assessments or
-   Nutrition column.
+   Option B uses five content columns instead of Option A's eight. Waterlow,
+   infectious status and diet sit in the `nursing` narrative; fluid
+   restrictions, MRSA swab dates, MUST and falls risk are separate fields
+   rendered as a compact strip at the foot of that column. Facts are held in
+   one place only — anything structured has been taken out of the narrative.
 
    `seedAudit` entries carry a `was` map: the previous value of whatever the
    entry changed. The app reconstructs each historic snapshot by applying those
@@ -33,7 +34,12 @@ window.HV_PATIENTS = [
       diagnosis:
         'Community acquired pneumonia — right basal. Day 4 IV co-amoxiclav (allergy: given clarithromycin).\n\nPMHx: COPD, hypertension, osteoarthritis, previous TIA 2019.',
       nursing:
-        'Assistance of 1 for transfers, uses Zimmer frame. Continent, requests toilet — call bell within reach.\nHard of hearing (right ear) — speak clearly, face patient. Daughter Susan is main contact.\n\nRisk scores: Waterlow 15. Falls risk — yes, reassessment due 12/09. MUST completed.\nInfectious status: nil known, standard precautions. MRSA swab taken 06/09, next due 13/09.\nDiet: soft diet, encourage intake. Poor appetite — food chart in progress. Supplements BD.',
+        'Assistance of 1 for transfers, uses Zimmer frame. Continent, requests toilet — call bell within reach.\nHard of hearing (right ear) — speak clearly, face patient. Daughter Susan is main contact.\n\nWaterlow 15, skin intact.\nInfectious status: nil known, standard precautions.\nDiet: soft diet, encourage intake. Poor appetite — food chart in progress. Supplements BD.',
+      fluidRestrictions: '',
+      mrsaLast: '2026-09-06',
+      mrsaDueNext: '2026-09-13',
+      must: 'yes',
+      falls: 'yes',
       therapies:
         'PT: reviewing daily — mobilising 5m with frame, aiming 10m before discharge.\nOT: home assessment requested 09/09, awaiting date. Will need stair and kitchen assessment.',
       medical:
@@ -66,7 +72,12 @@ window.HV_PATIENTS = [
       diagnosis:
         'Decompensated heart failure, NYHA III. Day 5 IV furosemide, now converted to oral.\n\nPMHx: Ischaemic heart disease, CABG 2011, atrial fibrillation (on apixaban), CKD stage 3.',
       nursing:
-        'Daily weights before breakfast — record on flowsheet. Strict fluid balance, 1.5L restriction.\nOrthopnoeic — sleeps on 3 pillows. Independent with washing, slow mobilising with stick.\n\nRisk scores: Waterlow 12. Falls risk — no. MUST completed.\nInfectious status: nil known. MRSA swab taken 05/09, next due 12/09.\nDiet: low salt. Fluid restricted 1.5L/24h — jug chart at bedside, family aware not to bring drinks.',
+        'Daily weights before breakfast — record on flowsheet. Strict fluid balance.\nOrthopnoeic — sleeps on 3 pillows. Independent with washing, slow mobilising with stick.\n\nWaterlow 12, skin intact.\nInfectious status: nil known.\nDiet: low salt. Family aware not to bring extra drinks.',
+      fluidRestrictions: '1.5L/24h — jug chart at bedside',
+      mrsaLast: '2026-09-05',
+      mrsaDueNext: '2026-09-12',
+      must: 'yes',
+      falls: 'no',
       therapies:
         'PT: exercise tolerance work, mobilising 20m on the flat.\nCardiac rehab referral to be made on discharge. No OT needs identified.',
       medical:
@@ -78,7 +89,7 @@ window.HV_PATIENTS = [
       { at: '2026-09-10T09:05', by: 'Dr P. Nayar (Registrar)', change: 'Medical / Surgical',
         was: { medical: 'Ward round 09/09: weight down 3.1kg. Continue IV furosemide, review for oral switch tomorrow.' } },
       { at: '2026-09-09T16:20', by: 'D. Reid (Ward Sister)', change: 'Nursing',
-        was: { nursing: 'Daily weights before breakfast. Strict fluid balance, 1.5L restriction.\nOrthopnoeic — sleeps on 3 pillows.\n\nRisk scores: Waterlow 12. Falls risk — no. MUST completed.\nInfectious status: nil known. MRSA swab taken 05/09, next due 12/09.\nDiet: low salt. Fluid restricted 1.5L/24h.' } },
+        was: { nursing: 'Daily weights before breakfast — record on flowsheet. Strict fluid balance.\nOrthopnoeic — sleeps on 3 pillows.\n\nWaterlow 12, skin intact.\nInfectious status: nil known.\nDiet: low salt.' } },
     ],
   },
 
@@ -97,7 +108,12 @@ window.HV_PATIENTS = [
       diagnosis:
         'Urinary tract infection with hyperactive delirium. Day 3 IV cefalexin.\n\nPMHx: Type 2 diabetes, hypothyroidism, recurrent UTIs.',
       nursing:
-        '4AT score 6 on admission, now 3 and improving. Reorientate frequently, clock and calendar at bedside.\nWandering at night — bed within sight of nurses station. Gujarati first language; family interpret, formal interpreter available.\n\nRisk scores: Waterlow 14. Falls risk — yes, bed rails discussed with family. MUST completed.\nInfectious status: ESBL E. coli in urine — contact precautions, side room not required. MRSA swab taken 08/09, next due 15/09.\nDiet: diabetic, vegetarian. BMs QDS. Eating with prompting, family bringing food from home.',
+        '4AT score 6 on admission, now 3 and improving. Reorientate frequently, clock and calendar at bedside.\nWandering at night — bed within sight of nurses station. Gujarati first language; family interpret, formal interpreter available.\n\nWaterlow 14. Bed rails discussed with family.\nInfectious status: ESBL E. coli in urine — contact precautions, side room not required.\nDiet: diabetic, vegetarian. BMs QDS. Eating with prompting, family bringing food from home.',
+      fluidRestrictions: '',
+      mrsaLast: '2026-09-08',
+      mrsaDueNext: '2026-09-15',
+      must: 'yes',
+      falls: 'yes',
       therapies:
         'PT: not required — mobilising independently, steady.\nOT: to review cognition and function before discharge, particularly medication management.',
       medical:
@@ -107,7 +123,7 @@ window.HV_PATIENTS = [
     },
     seedAudit: [
       { at: '2026-09-10T09:30', by: 'S. Ahmed (Staff Nurse)', change: 'Nursing',
-        was: { nursing: '4AT score 6 on admission. Reorientate frequently, clock and calendar at bedside.\nWandering at night. Gujarati first language.\n\nRisk scores: Waterlow 14. Falls risk — yes. MUST completed.\nInfectious status: query UTI, awaiting sensitivities. MRSA swab taken 08/09, next due 15/09.\nDiet: diabetic, vegetarian. BMs QDS.' } },
+        was: { nursing: '4AT score 6 on admission. Reorientate frequently, clock and calendar at bedside.\nWandering at night. Gujarati first language.\n\nWaterlow 14.\nInfectious status: query UTI, awaiting sensitivities.\nDiet: diabetic, vegetarian. BMs QDS.' } },
       { at: '2026-09-09T11:15', by: 'Dr L. Chen (SHO)', change: 'Medical / Surgical',
         was: { medical: 'Ward round 09/09: still intermittently pyrexial. Continue IV antibiotics, chase sensitivities.' } },
     ],
@@ -128,7 +144,12 @@ window.HV_PATIENTS = [
       diagnosis:
         'Infective exacerbation of COPD. Day 4 oral prednisolone and doxycycline. Weaned from nebulisers to inhalers 09/09.\n\nPMHx: COPD (FEV1 42%), type 2 diabetes, ex-smoker 40 pack years.',
       nursing:
-        'Sats target 88–92% — 1L via nasal specs overnight only, off oxygen by day.\nSelf-caring, independent mobility. Capillary BMs raised on steroids, monitoring QDS — no sliding scale needed.\n\nRisk scores: Waterlow 10. Falls risk — no. MUST completed.\nInfectious status: nil known, standard precautions. MRSA swab taken 07/09, next due 14/09.\nDiet: diabetic. Good appetite, no concerns.',
+        'Sats target 88–92% — 1L via nasal specs overnight only, off oxygen by day.\nSelf-caring, independent mobility. Capillary BMs raised on steroids, monitoring QDS — no sliding scale needed.\n\nWaterlow 10, skin intact.\nInfectious status: nil known, standard precautions.\nDiet: diabetic. Good appetite, no concerns.',
+      fluidRestrictions: '',
+      mrsaLast: '2026-09-07',
+      mrsaDueNext: '2026-09-14',
+      must: 'yes',
+      falls: 'no',
       therapies:
         'PT: respiratory physio for airway clearance — self-managing well, discharged from PT caseload.\nPulmonary rehab referral submitted 08/09. No OT needs.',
       medical:
@@ -157,7 +178,12 @@ window.HV_PATIENTS = [
       diagnosis:
         'Recurrent falls with deconditioning and dehydration on admission. Query inadequate home circumstances.\n\nPMHx: Alzheimer\'s dementia (moderate), atrial fibrillation, fractured wrist 2024.',
       nursing:
-        'Enhanced observation, 1:1 overnight — high falls risk, attempts to self-mobilise without frame.\nFull assistance with personal care. Becomes distressed early evening; familiar staff help.\n\nRisk scores: Waterlow 20 — grade 1 redness to sacrum, barrier cream applied, repositioning 2-hourly. Falls risk — yes, 3 falls at home in 6 weeks. MUST completed, score 2.\nInfectious status: nil known. MRSA swab taken 02/09, next due 09/09 — OVERDUE, please send.\nDiet: full assistance at mealtimes. Food and fluid chart. Fortified diet plus supplements TDS, dietitian reviewed 08/09.',
+        'Enhanced observation, 1:1 overnight — attempts to self-mobilise without frame.\nFull assistance with personal care. Becomes distressed early evening; familiar staff help.\n\nWaterlow 20 — grade 1 redness to sacrum, barrier cream applied, repositioning 2-hourly.\nThree falls at home in the six weeks before admission.\nInfectious status: nil known.\nDiet: full assistance at mealtimes. Food and fluid chart. Fortified diet plus supplements TDS, dietitian reviewed 08/09.',
+      fluidRestrictions: '',
+      mrsaLast: '2026-09-02',
+      mrsaDueNext: '2026-09-09',
+      must: 'yes',
+      falls: 'yes',
       therapies:
         'PT: sit to stand with assistance of 2. Limited by cognition and fatigue.\nOT: completing functional assessment to inform placement decision. Joint session with PT planned.',
       medical:
@@ -167,7 +193,7 @@ window.HV_PATIENTS = [
     },
     seedAudit: [
       { at: '2026-09-10T06:45', by: 'M. Kaur (HCA)', change: 'Nursing',
-        was: { nursing: 'Enhanced observation, 1:1 overnight — high falls risk.\nFull assistance with personal care.\n\nRisk scores: Waterlow 20. Falls risk — yes. MUST completed, score 2.\nInfectious status: nil known. MRSA swab taken 02/09, next due 09/09.\nDiet: full assistance at mealtimes. Fortified diet plus supplements TDS.' } },
+        was: { nursing: 'Enhanced observation, 1:1 overnight.\nFull assistance with personal care.\n\nWaterlow 20.\nInfectious status: nil known.\nDiet: full assistance at mealtimes. Fortified diet plus supplements TDS.' } },
       { at: '2026-09-09T15:30', by: 'D. Reid (Ward Sister)', change: 'Discharge Planning',
         was: { discharge: 'Not for discharge home. Safeguarding referral open. Awaiting social worker allocation.' } },
       { at: '2026-09-09T10:05', by: 'S. Ahmed (Staff Nurse)', change: 'Therapies',
@@ -190,7 +216,12 @@ window.HV_PATIENTS = [
       diagnosis:
         'Decompensated alcoholic liver disease with ascites. Ascitic drain removed 08/09.\n\nPMHx: Alcohol dependence, variceal bleed 2023, hypertension.',
       nursing:
-        'CIWA scoring 4-hourly, chlordiazepoxide reducing regime — day 4. Pabrinex as prescribed.\nDaily weights and abdominal girth. Strict fluid balance — chart not always totalled at 24h, please ensure completed.\nMobilising independently but unsteady.\n\nRisk scores: Waterlow 13. Falls risk — yes, unsteady gait. MUST completed, score 2.\nInfectious status: nil known. MRSA swab taken 04/09, next due 11/09.\nDiet: high calorie, high protein, salt restricted. Thiamine and multivitamins. Dietitian reviewing.',
+        'CIWA scoring 4-hourly, chlordiazepoxide reducing regime — day 4. Pabrinex as prescribed.\nDaily weights and abdominal girth. Fluid balance chart not always totalled at 24h — please ensure completed.\nMobilising independently but unsteady.\n\nWaterlow 13.\nInfectious status: nil known.\nDiet: high calorie, high protein, salt restricted. Thiamine and multivitamins. Dietitian reviewing.',
+      fluidRestrictions: '1.5L/24h',
+      mrsaLast: '2026-09-04',
+      mrsaDueNext: '2026-09-11',
+      must: 'yes',
+      falls: 'yes',
       therapies:
         'PT: mobility and deconditioning work, tolerating well.\nAlcohol liaison team reviewing — engagement good, attending sessions.',
       medical:
@@ -200,7 +231,7 @@ window.HV_PATIENTS = [
     },
     seedAudit: [
       { at: '2026-09-10T04:20', by: 'J. Whitfield (Charge Nurse)', change: 'Nursing',
-        was: { nursing: 'CIWA scoring 4-hourly, chlordiazepoxide reducing regime — day 3. Pabrinex as prescribed.\nDaily weights and abdominal girth. Strict fluid balance.\n\nRisk scores: Waterlow 13. Falls risk — yes. MUST completed, score 2.\nInfectious status: nil known. MRSA swab taken 04/09, next due 11/09.\nDiet: high calorie, high protein, salt restricted.' } },
+        was: { nursing: 'CIWA scoring 4-hourly, chlordiazepoxide reducing regime — day 3. Pabrinex as prescribed.\nDaily weights and abdominal girth.\n\nWaterlow 13.\nInfectious status: nil known.\nDiet: high calorie, high protein, salt restricted.' } },
       { at: '2026-09-08T14:15', by: 'Dr L. Chen (SHO)', change: 'Diagnosis and PMHx',
         was: { diagnosis: 'Decompensated alcoholic liver disease with ascites. Ascitic drain in situ.\n\nPMHx: Alcohol dependence, variceal bleed 2023, hypertension.' } },
     ],
@@ -221,7 +252,12 @@ window.HV_PATIENTS = [
       diagnosis:
         'CKD stage 4 with fluid overload. Responding to IV diuresis, now oral.\n\nPMHx: Chronic kidney disease, heart failure, type 2 diabetes, hypertension.',
       nursing:
-        'Daily weights, strict fluid balance — 1L restriction. Legs elevated when sitting out.\nBilateral pitting oedema to knees, improving. Skin intact but fragile — emollient BD, handle with care.\n\nRisk scores: Waterlow 16. Falls risk — yes. MUST completed.\nInfectious status: nil known. MRSA swab taken 03/09, next due 10/09 — due today.\nDiet: low potassium, low salt. Renal dietitian reviewed 07/09. Appetite fair.',
+        'Daily weights, strict fluid balance. Legs elevated when sitting out.\nBilateral pitting oedema to knees, improving. Skin intact but fragile — emollient BD, handle with care.\n\nWaterlow 16.\nInfectious status: nil known.\nDiet: low potassium, low salt. Renal dietitian reviewed 07/09. Appetite fair.',
+      fluidRestrictions: '1L/24h',
+      mrsaLast: '2026-09-03',
+      mrsaDueNext: '2026-09-10',
+      must: 'yes',
+      falls: 'yes',
       therapies:
         'PT: mobility and stair practice — lives in a first floor flat with no lift, stair assessment booked.\nOT: to assess kitchen and bathroom, may need equipment before discharge.',
       medical:
@@ -231,7 +267,7 @@ window.HV_PATIENTS = [
     },
     seedAudit: [
       { at: '2026-09-10T08:40', by: 'S. Ahmed (Staff Nurse)', change: 'Nursing',
-        was: { nursing: 'Daily weights, strict fluid balance — 1L restriction. Legs elevated when sitting out.\nBilateral pitting oedema to knees. Skin fragile — emollient BD.\n\nRisk scores: Waterlow 16. Falls risk — yes. MUST completed.\nInfectious status: nil known. MRSA swab taken 03/09, next due 10/09.\nDiet: low potassium, low salt. Appetite fair.' } },
+        was: { nursing: 'Daily weights, strict fluid balance. Legs elevated when sitting out.\nBilateral pitting oedema to knees. Skin fragile — emollient BD.\n\nWaterlow 16.\nInfectious status: nil known.\nDiet: low potassium, low salt.' } },
       { at: '2026-09-09T12:25', by: 'L. Okafor (Staff Nurse)', change: 'Discharge Planning',
         was: { discharge: 'Lives alone. Package of care to be restarted — was in place until July.\nCommunity matron referral sent 08/09.' } },
     ],
@@ -252,7 +288,12 @@ window.HV_PATIENTS = [
       diagnosis:
         'Left MCA ischaemic stroke, day 6. Right sided weakness and expressive dysphasia.\n\nPMHx: Atrial fibrillation, hypertension, myocardial infarction 2016.',
       nursing:
-        'Right arm and leg weakness — assistance of 2 for transfers with hoist. Positioning chart in use.\nExpressive dysphasia — use communication board, allow time. Continent with 2-hourly toileting.\nWife visiting daily and keen to be involved in care.\n\nRisk scores: Waterlow 17 — repositioning 2-hourly, skin intact. Falls risk — yes. MUST completed, score 2.\nInfectious status: nil known, standard precautions. MRSA swab taken 05/09, next due 12/09.\nDiet: SALT assessed 08/09 — Level 4 puree and Level 2 mildly thick fluids. Full assistance, sit upright 90°, supervise all intake. Overnight NG feed as supplement.',
+        'Right arm and leg weakness — assistance of 2 for transfers with hoist. Positioning chart in use.\nExpressive dysphasia — use communication board, allow time. Continent with 2-hourly toileting.\nWife visiting daily and keen to be involved in care.\n\nWaterlow 17 — repositioning 2-hourly, skin intact.\nInfectious status: nil known, standard precautions.\nDiet: SALT assessed 08/09 — Level 4 puree and Level 2 mildly thick fluids. Full assistance, sit upright 90°, supervise all intake. Overnight NG feed as supplement.',
+      fluidRestrictions: '',
+      mrsaLast: '2026-09-05',
+      mrsaDueNext: '2026-09-12',
+      must: 'yes',
+      falls: 'yes',
       therapies:
         'Stroke MDT weekly. PT: daily — sitting balance improving, standing with 2 and frame.\nSALT: reviewing swallow twice weekly, next 11/09.\nOT: assessing seating and upper limb function, splint under consideration.',
       medical:
@@ -266,7 +307,7 @@ window.HV_PATIENTS = [
       { at: '2026-09-09T13:00', by: 'Dr S. Whitmore (Consultant)', change: 'Medical / Surgical',
         was: { medical: 'Stroke consultant review 08/09: awaiting repeat CT before starting anticoagulation.' } },
       { at: '2026-09-08T15:05', by: 'S. Ahmed (Staff Nurse)', change: 'Nursing',
-        was: { nursing: 'Right arm and leg weakness — assistance of 2 for transfers with hoist.\nExpressive dysphasia — use communication board.\n\nRisk scores: Waterlow 17. Falls risk — yes. MUST completed, score 2.\nInfectious status: nil known. MRSA swab taken 05/09, next due 12/09.\nDiet: nil by mouth pending SALT assessment. NG feed in progress.' } },
+        was: { nursing: 'Right arm and leg weakness — assistance of 2 for transfers with hoist.\nExpressive dysphasia — use communication board.\n\nWaterlow 17.\nInfectious status: nil known.\nDiet: nil by mouth pending SALT assessment. NG feed in progress.' } },
     ],
   },
 ];

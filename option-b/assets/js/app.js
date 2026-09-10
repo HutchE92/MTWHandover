@@ -22,6 +22,18 @@
   const CFG = window.HV_CONFIG;
   const PATIENTS = window.HV_PATIENTS;
 
+  /* Structured fields pinned to the bottom of the Nursing column. Kept
+     compact: the rows flex, so a label and its control sit on one line where
+     there is room and wrap only when there is not. */
+  const NURSING_EXTRAS = [
+    { field: 'fluidRestrictions', type: 'text', label: 'Fluid restrictions',
+      placeholder: 'e.g. 1.5L/24h' },
+    { field: 'mrsaLast', type: 'date', label: 'MRSA swab last', group: 'MRSA swabs', mini: 'Last' },
+    { field: 'mrsaDueNext', type: 'date', label: 'MRSA swab due next', group: 'MRSA swabs', mini: 'Due next' },
+    { field: 'must', type: 'yesno', label: 'MUST complete' },
+    { field: 'falls', type: 'yesno', label: 'Falls risk' },
+  ];
+
   /* The five content columns, left to right. This single list drives the
      table header, the row cells and the order of the audit snapshot, so the
      three can never drift apart. */
@@ -37,8 +49,9 @@
     {
       field: 'nursing',
       label: 'Nursing',
-      width: '22%',
-      placeholder: 'Mobility, continence, skin, cognition, risk scores, infectious status, diet…',
+      width: '23%',
+      placeholder: 'Mobility, continence, skin, cognition, Waterlow, infectious status, diet…',
+      extras: NURSING_EXTRAS,
     },
     {
       field: 'therapies',
@@ -65,6 +78,9 @@
 
   const FIELD_LABELS = Object.fromEntries(COLUMNS.map((c) => [c.field, plainLabel(c.label)]));
   FIELD_LABELS.edd = 'Estimated date of discharge';
+  /* Structured Nursing fields are attributed to their column in the audit, so
+     "Nursing — Falls risk" rather than a bare "Falls risk". */
+  for (const x of NURSING_EXTRAS) FIELD_LABELS[x.field] = `Nursing — ${x.label}`;
 
   /* --- Utilities ---------------------------------------------------------- */
 
@@ -141,7 +157,10 @@
       for (const p of PATIENTS) {
         const s = p.seed || {};
         d.notes[p.id] = {};
-        for (const c of COLUMNS) d.notes[p.id][c.field] = s[c.field] || '';
+        for (const c of COLUMNS) {
+          d.notes[p.id][c.field] = s[c.field] || '';
+          for (const x of c.extras || []) d.notes[p.id][x.field] = s[x.field] || '';
+        }
         d.edd[p.id] = p.edd || '';
       }
 
@@ -188,7 +207,10 @@
     snapshot(id) {
       const n = this.notes(id);
       const snap = { edd: this.data.edd[id] || '' };
-      for (const c of COLUMNS) snap[c.field] = n[c.field] || '';
+      for (const c of COLUMNS) {
+        snap[c.field] = n[c.field] || '';
+        for (const x of c.extras || []) snap[x.field] = n[x.field] || '';
+      }
       return snap;
     },
   };
@@ -232,10 +254,20 @@
 
   /* --- Cells -------------------------------------------------------------- */
 
-  /** Grow a textarea to fit its content, so no clinical detail is hidden. */
+  /**
+   * Grow a textarea to fit its content, so no clinical detail is hidden.
+   *
+   * scrollHeight covers content and padding but not borders, while these boxes
+   * are border-box — so assigning scrollHeight alone leaves the last line
+   * clipped by the border width. Measure that difference and add it back.
+   */
   function autosize(ta) {
     ta.style.height = 'auto';
-    ta.style.height = ta.scrollHeight + 'px';
+    /* An empty box is sized by its placeholder, which can wrap to several
+       lines and inflate the row for no reason. Leave it at its CSS minimum. */
+    if (!ta.value) { ta.style.height = ''; return; }
+    const chrome = ta.offsetHeight - ta.clientHeight;
+    ta.style.height = ta.scrollHeight + chrome + 'px';
   }
 
   function autosizeAll(root = document) {
@@ -302,14 +334,100 @@
     return td;
   }
 
+  /** Compact Yes / No control. Selected answer is marked in the palette blue. */
+  function yesNo(pid, field, value) {
+    const wrap = el('div', { class: 'yn' });
+    for (const v of ['yes', 'no']) {
+      const label = el('label', { class: 'yn__opt' });
+      label.appendChild(el('input', {
+        type: 'radio', name: `${field}-${pid}`, value: v,
+        checked: value === v,
+        dataset: { role: 'nxyn', pid, field },
+      }));
+      label.appendChild(el('span', { text: v === 'yes' ? 'Yes' : 'No' }));
+      wrap.appendChild(label);
+    }
+    return wrap;
+  }
+
+  /**
+   * The structured strip at the foot of the Nursing column. Grouped fields
+   * (the two MRSA dates) share one row under a single heading; the two
+   * Yes/No toggles share another.
+   */
+  function nursingExtras(p, extras) {
+    const notes = store.notes(p.id);
+    const box = el('div', { class: 'nf' });
+
+    const mini = (text) => el('span', { class: 'nf__mini', text });
+
+    /* Fluid restrictions: label and a one-line box that grows only if needed. */
+    const fluid = extras.find((x) => x.type === 'text');
+    if (fluid) {
+      box.appendChild(el('div', { class: 'nf__row' }, [
+        el('span', { class: 'nf__label', text: fluid.label }),
+        el('textarea', {
+          class: 'ta ta--mini',
+          /* rows defaults to 2, which would make an empty box two lines tall
+             however small its min-height. It grows via autosize when typed in. */
+          rows: 1,
+          placeholder: fluid.placeholder || '',
+          value: notes[fluid.field] || '',
+          dataset: { role: 'note', pid: p.id, field: fluid.field },
+          spellcheck: true,
+        }),
+      ]));
+    }
+
+    /* MRSA swabs: heading on its own line, then both dates side by side in a
+       two-column grid. A grid rather than a flex row so the pair cannot wrap
+       unpredictably when the label and dates exceed the column width. */
+    const dates = extras.filter((x) => x.type === 'date');
+    if (dates.length) {
+      box.appendChild(el('div', { class: 'nf__head', text: dates[0].group || '' }));
+      const grid = el('div', { class: 'nf__grid' });
+      for (const d of dates) {
+        /* Label sits beside the date rather than above it — a short word like
+           "Last" costs no extra line here. */
+        grid.appendChild(el('div', { class: 'nf__cell nf__cell--inline' }, [
+          mini(d.mini || d.label),
+          el('input', {
+            type: 'date', class: 'dt',
+            value: notes[d.field] || '',
+            dataset: { role: 'nxdate', pid: p.id, field: d.field },
+            'aria-label': d.label,
+          }),
+        ]));
+      }
+      box.appendChild(grid);
+    }
+
+    /* Both toggles share one two-column row, each with its label above. */
+    const toggles = extras.filter((x) => x.type === 'yesno');
+    if (toggles.length) {
+      const grid = el('div', { class: 'nf__grid' });
+      for (const t of toggles) {
+        grid.appendChild(el('div', { class: 'nf__cell' }, [
+          mini(t.label),
+          yesNo(p.id, t.field, notes[t.field]),
+        ]));
+      }
+      box.appendChild(grid);
+    }
+
+    return box;
+  }
+
   function noteCell(p, col) {
-    return el('td', {}, el('textarea', {
+    const td = el('td', {}, el('textarea', {
       class: 'ta',
       placeholder: col.placeholder,
       value: store.notes(p.id)[col.field] || '',
       dataset: { role: 'note', pid: p.id, field: col.field },
       spellcheck: true,
     }));
+    if (col.extras) td.appendChild(nursingExtras(p, col.extras));
+    return td;
   }
 
   /* --- Render ------------------------------------------------------------- */
@@ -396,9 +514,14 @@
 
     rows.addEventListener('change', (e) => {
       const t = e.target;
-      if (t.dataset.role === 'edd') {
-        store.data.edd[t.dataset.pid] = t.value;
-        commitAudit(t.dataset.pid, FIELD_LABELS.edd);
+      const { role, pid, field } = t.dataset;
+
+      if (role === 'edd') {
+        store.data.edd[pid] = t.value;
+        commitAudit(pid, FIELD_LABELS.edd);
+      } else if (role === 'nxdate' || role === 'nxyn') {
+        store.notes(pid)[field] = t.value;
+        commitAudit(pid, FIELD_LABELS[field]);
       }
     });
 
@@ -450,9 +573,19 @@
       dl.appendChild(el('dd', { text: value || '' }));
     };
 
-    /* Ordered to match the board's columns left to right. */
+    const yn = (v) => (v ? (v === 'yes' ? 'Yes' : 'No') : '—');
+
+    /* Ordered to match the board's columns left to right, with each column's
+       structured fields immediately after its free text. */
     add('EDD', snap.edd ? fmtDate(snap.edd) : '');
-    for (const c of COLUMNS) add(c.label, snap[c.field]);
+    for (const c of COLUMNS) {
+      add(c.label, snap[c.field]);
+      for (const x of c.extras || []) {
+        const v = snap[x.field];
+        add(x.label,
+          x.type === 'yesno' ? yn(v) : x.type === 'date' ? (v ? fmtDate(v) : '—') : v);
+      }
+    }
 
     return dl;
   }

@@ -6,7 +6,7 @@ window.HV_CONFIG = {
      origin, so a shared key would let entries and audit history bleed between
      them. Bumped to v2 when the columns were restructured — the stored shape
      changed, so earlier saved state must not be reloaded. */
-  storageKey: 'mtw-handover-poc-b-v2',
+  storageKey: 'mtw-handover-poc-b-v3',
 
   /* Work-area insets as percentages of the background image. Kept here as well
      as in shell.css so the Shift+A alignment overlay can report them. */
