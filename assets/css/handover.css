@@ -348,6 +348,25 @@
 .ra__row--overdue .ra__label { color: var(--red); }
 .ra__row--overdue .dt { border-color: var(--red); background: var(--red-pale); }
 
+/* MRSA taken / due sit side by side — one paired fact, one row. */
+.ra__split { display: grid; grid-template-columns: 1fr 1fr; gap: 0 6px; }
+.ra__field { min-width: 0; }
+
+.ra__sublabel {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 2px;
+  white-space: nowrap;
+}
+
+.ra__field--overdue .ra__sublabel { color: var(--red); }
+.ra__field--overdue .dt { border-color: var(--red); background: var(--red-pale); }
+.ra__field .dt { width: 100%; }
+
 /* --- Tasks ---------------------------------------------------------------- */
 
 .tk { display: flex; flex-direction: column; gap: 5px; }

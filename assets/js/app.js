@@ -429,18 +429,24 @@
     box.appendChild(row(RISK_LABELS.falls, yesNo(p.id, 'riskyn', 'falls', r.falls, false)));
     box.appendChild(row(RISK_LABELS.must, yesNo(p.id, 'riskyn', 'must', r.must, true)));
 
-    box.appendChild(row(
-      RISK_LABELS.mrsaTaken,
-      dateInput(p.id, 'riskdate', 'mrsaTaken', r.mrsaTaken, 'MRSA swab taken')
-    ));
+    /* Taken and due are one paired fact, so they share a single row side by
+       side rather than taking a labelled sub-row each. */
+    const overdue = Boolean(r.mrsaDue && r.mrsaDue < today());
+    const field = (label, name, value, isOverdue) => {
+      const f = el('div', { class: 'ra__field' + (isOverdue ? ' ra__field--overdue' : '') });
+      f.appendChild(el('span', {
+        class: 'ra__sublabel', text: label,
+        title: isOverdue ? 'Overdue' : '',
+      }));
+      f.appendChild(dateInput(p.id, 'riskdate', name, value, `MRSA swab ${label.toLowerCase()}`));
+      return f;
+    };
 
-    const overdue = r.mrsaDue && r.mrsaDue < today();
-    const dueRow = row(
-      RISK_LABELS.mrsaDue + (overdue ? ' — overdue' : ''),
-      dateInput(p.id, 'riskdate', 'mrsaDue', r.mrsaDue, 'MRSA swab due'),
-      overdue
-    );
-    box.appendChild(dueRow);
+    const split = el('div', { class: 'ra__split' }, [
+      field('MRSA taken', 'mrsaTaken', r.mrsaTaken, false),
+      field('MRSA due', 'mrsaDue', r.mrsaDue, overdue),
+    ]);
+    box.appendChild(el('div', { class: 'ra__row' }, split));
 
     td.appendChild(box);
     return td;
@@ -701,9 +707,17 @@
       dl.appendChild(el('dd', { text: value || '' }));
     };
 
+    /* Ordered to match the board's columns left to right: patient details
+       (EDD), diagnosis, nursing, tasks, nutrition, risk, therapy, discharge. */
     add('EDD', snap.edd ? fmtDate(snap.edd) : '');
     add(FIELD_LABELS.diagnosis, snap.diagnosis);
     add(FIELD_LABELS.nursing, snap.nursing);
+
+    const open = (snap.tasks || []).filter((t) => !t.done);
+    add('Open tasks', open.length
+      ? open.map((t) => `• ${t.text}${t.due ? ` (due ${fmtDate(t.due)})` : ''} — ${t.status}`).join('\n')
+      : 'None');
+
     add('Fluid restrictions', snap.fluidRestriction ? (snap.fluidRestriction === 'yes' ? 'Yes' : 'No') : '');
     add(FIELD_LABELS.nutrition, snap.nutrition);
 
@@ -719,11 +733,6 @@
 
     add(FIELD_LABELS.therapy, snap.therapy);
     add(FIELD_LABELS.discharge, snap.discharge);
-
-    const open = (snap.tasks || []).filter((t) => !t.done);
-    add('Open tasks', open.length
-      ? open.map((t) => `• ${t.text}${t.due ? ` (due ${fmtDate(t.due)})` : ''} — ${t.status}`).join('\n')
-      : 'None');
 
     return dl;
   }
