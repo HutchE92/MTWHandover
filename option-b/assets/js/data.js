@@ -43,7 +43,7 @@ window.HV_PATIENTS = [
       therapies:
         'PT: reviewing daily — mobilising 5m with frame, aiming 10m before discharge.\nOT: home assessment requested 09/09, awaiting date. Will need stair and kitchen assessment.',
       medical:
-        'Consultant review 10/09 (Dr Aldridge): CRP falling, 96 to 41. Afebrile 24h.\nPlan — complete clarithromycin, day 4 of 5. Repeat U&Es and CRP today. If bloods satisfactory and remains afebrile, medically fit from 11/09.\nNo change to inhalers. Continue prophylactic LMWH.',
+        'Consultant review 10/09 (Dr Aldridge): CRP falling, 96 to 41. Afebrile 24h.\n\nPlan 10/09:\n1. Complete clarithromycin — day 4 of 5.\n2. Repeat U&Es and CRP today.\n3. If bloods satisfactory and afebrile, medically fit from 11/09.\n4. No change to inhalers.\n5. Continue prophylactic LMWH.',
       discharge:
         'For discharge home with existing package of care (2x daily).\nPending: OT home assessment date, TTOs, transport booking.\nDaughter unable to collect — hospital transport required.',
     },
@@ -51,7 +51,7 @@ window.HV_PATIENTS = [
       { at: '2026-09-10T08:15', by: 'S. Ahmed (Staff Nurse)', change: 'Discharge Planning',
         was: { discharge: 'For discharge home with existing package of care (2x daily).\nPending: OT home assessment date, TTOs.' } },
       { at: '2026-09-10T07:40', by: 'Dr M. Aldridge (Consultant)', change: 'Medical / Surgical',
-        was: { medical: 'Consultant review 09/09: CRP 96. Continue IV antibiotics and review in 24h.' } },
+        was: { medical: 'Consultant review 09/09 (Dr Aldridge): CRP 96, remains febrile.\n\nPlan 09/09:\n1. Continue IV antibiotics.\n2. Review in 24h.' } },
       { at: '2026-09-09T21:40', by: 'J. Whitfield (Charge Nurse)', change: 'Estimated date of discharge',
         was: { edd: '2026-09-13' } },
     ],
@@ -81,13 +81,13 @@ window.HV_PATIENTS = [
       therapies:
         'PT: exercise tolerance work, mobilising 20m on the flat.\nCardiac rehab referral to be made on discharge. No OT needs identified.',
       medical:
-        'Ward round 10/09 (Dr Nayar): weight down 4.2kg since admission. Creatinine stable at 132.\nPlan — continue oral furosemide 40mg BD. Await echo before confirming EDD. Consider spironolactone once renal function confirmed stable.\nApixaban continued at reduced dose.',
+        'Ward round 10/09 (Dr Nayar): weight down 4.2kg since admission. Creatinine stable at 132.\n\nPlan 10/09:\n1. Continue oral furosemide 40mg BD.\n2. Await echo before confirming EDD.\n3. Consider spironolactone once renal function confirmed stable.\n4. Continue apixaban at reduced dose.',
       discharge:
         'Home with wife, who provides support. Ground floor flat, no stairs.\nPending: echo result, heart failure nurse referral, weight monitoring plan and scales at home.',
     },
     seedAudit: [
       { at: '2026-09-10T09:05', by: 'Dr P. Nayar (Registrar)', change: 'Medical / Surgical',
-        was: { medical: 'Ward round 09/09: weight down 3.1kg. Continue IV furosemide, review for oral switch tomorrow.' } },
+        was: { medical: 'Ward round 09/09 (Dr Nayar): weight down 3.1kg.\n\nPlan 09/09:\n1. Continue IV furosemide.\n2. Review for oral switch tomorrow.' } },
       { at: '2026-09-09T16:20', by: 'D. Reid (Ward Sister)', change: 'Nursing',
         was: { nursing: 'Daily weights before breakfast — record on flowsheet. Strict fluid balance.\nOrthopnoeic — sleeps on 3 pillows.\n\nWaterlow 12, skin intact.\nInfectious status: nil known.\nDiet: low salt.' } },
     ],
@@ -117,7 +117,7 @@ window.HV_PATIENTS = [
       therapies:
         'PT: not required — mobilising independently, steady.\nOT: to review cognition and function before discharge, particularly medication management.',
       medical:
-        'Ward round 10/09 (Dr Chen): clinically improving, apyrexial 48h. Sensitivities confirm cefalexin appropriate.\nPlan — complete 5 days IV then oral to total 7 days. Repeat MSU on completion. Delirium screen sent, B12 and folate normal.\nHold metformin while inpatient, restart on discharge.',
+        'Ward round 10/09 (Dr Chen): clinically improving, apyrexial 48h. Sensitivities confirm cefalexin appropriate.\n\nPlan 10/09:\n1. Complete 5 days IV, then oral to total 7 days.\n2. Repeat MSU on completion.\n3. Delirium screen sent — B12 and folate normal.\n4. Hold metformin while inpatient, restart on discharge.',
       discharge:
         'Home with son and daughter-in-law, who are present daily.\nPending: OT cognitive review, interpreter for discharge discussion, delirium information leaflet, GP follow-up for repeat MSU.',
     },
@@ -125,7 +125,7 @@ window.HV_PATIENTS = [
       { at: '2026-09-10T09:30', by: 'S. Ahmed (Staff Nurse)', change: 'Nursing',
         was: { nursing: '4AT score 6 on admission. Reorientate frequently, clock and calendar at bedside.\nWandering at night. Gujarati first language.\n\nWaterlow 14.\nInfectious status: query UTI, awaiting sensitivities.\nDiet: diabetic, vegetarian. BMs QDS.' } },
       { at: '2026-09-09T11:15', by: 'Dr L. Chen (SHO)', change: 'Medical / Surgical',
-        was: { medical: 'Ward round 09/09: still intermittently pyrexial. Continue IV antibiotics, chase sensitivities.' } },
+        was: { medical: 'Ward round 09/09 (Dr Chen): still intermittently pyrexial.\n\nPlan 09/09:\n1. Continue IV antibiotics.\n2. Chase sensitivities.' } },
     ],
   },
 
@@ -153,7 +153,7 @@ window.HV_PATIENTS = [
       therapies:
         'PT: respiratory physio for airway clearance — self-managing well, discharged from PT caseload.\nPulmonary rehab referral submitted 08/09. No OT needs.',
       medical:
-        'Ward round 10/09 (Dr Nayar): sats 91% on air, chest clear of wheeze. Completing 5 days prednisolone.\nPlan — medically fit for discharge 11/09. Needs inhaler technique confirmed and a rescue pack on TTOs.\nDiscussed steroid effect on BMs; no change to metformin.',
+        'Ward round 10/09 (Dr Nayar): sats 91% on air, chest clear of wheeze. Completing 5 days prednisolone.\n\nPlan 10/09:\n1. Medically fit for discharge 11/09.\n2. Confirm inhaler technique before discharge.\n3. Rescue pack on TTOs.\n4. No change to metformin despite steroid effect on BMs.',
       discharge:
         'Home alone, daughter lives nearby and visits daily.\nPending: inhaler technique teaching, TTOs including rescue pack, pulmonary rehab appointment confirmation.',
     },
@@ -187,7 +187,7 @@ window.HV_PATIENTS = [
       therapies:
         'PT: sit to stand with assistance of 2. Limited by cognition and fatigue.\nOT: completing functional assessment to inform placement decision. Joint session with PT planned.',
       medical:
-        'Consultant review 09/09 (Dr Aldridge): no acute medical issue. Bloods normalised after rehydration.\nPlan — no further investigation. Medically fit, but discharge blocked pending safeguarding and placement.\nCapacity assessed as lacking for discharge destination; best interests process under way.',
+        'Consultant review 09/09 (Dr Aldridge): no acute medical issue. Bloods normalised after rehydration.\n\nPlan 09/09:\n1. No further investigation required.\n2. Medically fit — discharge blocked pending safeguarding and placement.\n3. Capacity assessed as lacking for discharge destination.\n4. Best interests process under way.',
       discharge:
         'Not for discharge home. Safeguarding referral open, social worker allocated 09/09.\nLikely 24-hour care placement. Best interests meeting to be arranged — no EDD until held.\nPending: meeting date and attendees, family notified, placement search.',
     },
@@ -225,7 +225,7 @@ window.HV_PATIENTS = [
       therapies:
         'PT: mobility and deconditioning work, tolerating well.\nAlcohol liaison team reviewing — engagement good, attending sessions.',
       medical:
-        'Ward round 10/09 (Dr Chen): girth reduced 6cm since drain. Bilirubin 68, falling. Albumin 28.\nPlan — continue spironolactone and furosemide, monitor U&Es alternate days. Repeat USS in one week.\nNot medically fit until ascites stable. Endoscopy surveillance to be arranged as outpatient.',
+        'Ward round 10/09 (Dr Chen): girth reduced 6cm since drain. Bilirubin 68 and falling. Albumin 28.\n\nPlan 10/09:\n1. Continue spironolactone and furosemide.\n2. Monitor U&Es alternate days.\n3. Repeat USS in one week.\n4. Not medically fit until ascites stable.\n5. Arrange outpatient endoscopy surveillance.',
       discharge:
         'Home alone, first floor flat.\nPending: ascites stabilised, alcohol liaison community follow-up arranged, outpatient endoscopy booked, GP letter re monitoring.',
     },
@@ -261,7 +261,7 @@ window.HV_PATIENTS = [
       therapies:
         'PT: mobility and stair practice — lives in a first floor flat with no lift, stair assessment booked.\nOT: to assess kitchen and bathroom, may need equipment before discharge.',
       medical:
-        'Ward round 10/09 (Dr Nayar): weight down 5.1kg. Creatinine 246, eGFR 18 — stable for her baseline. K+ 4.8.\nPlan — continue oral furosemide 80mg OD. Renal team advised no dialysis planning at present, review in clinic.\nStop nephrotoxics. Avoid morphine — causes confusion.',
+        'Ward round 10/09 (Dr Nayar): weight down 5.1kg. Creatinine 246, eGFR 18 — stable for her baseline. K+ 4.8.\n\nPlan 10/09:\n1. Continue oral furosemide 80mg OD.\n2. Renal team advise no dialysis planning at present — review in clinic.\n3. Stop nephrotoxics.\n4. Avoid morphine — causes confusion.',
       discharge:
         'Lives alone. Package of care to be restarted — was in place until July.\nCommunity matron referral sent 08/09.\nPending: POC restart date from social services, PT stair assessment, OT equipment, renal clinic appointment.',
     },
@@ -297,7 +297,7 @@ window.HV_PATIENTS = [
       therapies:
         'Stroke MDT weekly. PT: daily — sitting balance improving, standing with 2 and frame.\nSALT: reviewing swallow twice weekly, next 11/09.\nOT: assessing seating and upper limb function, splint under consideration.',
       medical:
-        'Stroke consultant review 09/09 (Dr Whitmore): CT confirms left MCA infarct, no haemorrhagic transformation.\nPlan — apixaban started day 5 for AF. BP target below 140 systolic, amlodipine added. Statin commenced.\nSwallow remains unsafe for normal diet; continue modified consistency per SALT.',
+        'Stroke consultant review 09/09 (Dr Whitmore): CT confirms left MCA infarct, no haemorrhagic transformation.\n\nPlan 09/09:\n1. Apixaban started day 5 for AF.\n2. BP target below 140 systolic — amlodipine added.\n3. Statin commenced.\n4. Continue modified consistency diet per SALT — swallow unsafe for normal diet.',
       discharge:
         'For transfer to the stroke rehabilitation unit when a bed is available — referral accepted 09/09.\nPending: bed availability, transfer letter, wife updated on likely timescale.',
     },
@@ -305,7 +305,7 @@ window.HV_PATIENTS = [
       { at: '2026-09-09T17:10', by: 'D. Reid (Ward Sister)', change: 'Discharge Planning',
         was: { discharge: 'For transfer to the stroke rehabilitation unit when a bed is available — referral submitted 08/09.' } },
       { at: '2026-09-09T13:00', by: 'Dr S. Whitmore (Consultant)', change: 'Medical / Surgical',
-        was: { medical: 'Stroke consultant review 08/09: awaiting repeat CT before starting anticoagulation.' } },
+        was: { medical: 'Stroke consultant review 08/09 (Dr Whitmore): awaiting repeat CT.\n\nPlan 08/09:\n1. Repeat CT before starting anticoagulation.\n2. Continue aspirin in the interim.' } },
       { at: '2026-09-08T15:05', by: 'S. Ahmed (Staff Nurse)', change: 'Nursing',
         was: { nursing: 'Right arm and leg weakness — assistance of 2 for transfers with hoist.\nExpressive dysphasia — use communication board.\n\nWaterlow 17.\nInfectious status: nil known.\nDiet: nil by mouth pending SALT assessment. NG feed in progress.' } },
     ],
