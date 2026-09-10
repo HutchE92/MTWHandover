@@ -235,6 +235,19 @@
 
     const badge = $(`#rows tr[data-pid="${pid}"] [data-role="handover"] .btn__badge`);
     if (badge) badge.textContent = hist.length;
+    renderLastUpdated(pid);
+  }
+
+  /** Refresh the "Last updated" line in place, rather than rebuilding the cell
+      and disturbing whatever the user is editing. */
+  function renderLastUpdated(pid) {
+    const row = $(`#rows tr[data-pid="${pid}"]`);
+    if (!row) return;
+    const latest = store.audit(pid)[0];
+    const when = row.querySelector('[data-role="lastWhen"]');
+    const who = row.querySelector('[data-role="lastWho"]');
+    if (when) when.textContent = latest ? fmtDateTime(latest.at) : '—';
+    if (who) who.textContent = latest ? latest.by : 'No changes recorded';
   }
 
   let savedTimer = null;
@@ -329,6 +342,23 @@
       el('span', { text: 'Handover History' }),
       el('span', { class: 'btn__badge', text: String(store.audit(p.id).length) }),
     ])));
+
+    /* Who last touched this row, and when — taken from the newest audit entry
+       so it can never disagree with the history behind the button. */
+    const latest = store.audit(p.id)[0];
+    box.appendChild(el('div', { class: 'pt__updated' }, [
+      el('span', { class: 'pt__updatedLabel', text: 'Last updated' }),
+      el('span', {
+        class: 'pt__updatedWhen',
+        text: latest ? fmtDateTime(latest.at) : '—',
+        dataset: { role: 'lastWhen' },
+      }),
+      el('span', {
+        class: 'pt__updatedWho',
+        text: latest ? latest.by : 'No changes recorded',
+        dataset: { role: 'lastWho' },
+      }),
+    ]));
 
     td.appendChild(box);
     return td;
