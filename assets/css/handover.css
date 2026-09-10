@@ -235,8 +235,9 @@
 .ta {
   display: block;
   width: 100%;
-  min-height: 58px;
+  min-height: 54px;
   font: inherit;
+  font-size: 11.5px;
   color: var(--ink);
   padding: 6px 7px;
   border: 1px solid transparent;
@@ -259,7 +260,7 @@
 
 .dt {
   font: inherit;
-  font-size: 11.5px;
+  font-size: 10.5px;
   color: var(--ink);
   padding: 3px 5px;
   border: 1px solid var(--line);
@@ -335,7 +336,7 @@
   margin-bottom: 4px;
 }
 
-.ra__row .ta { min-height: 38px; font-size: 11.5px; }
+.ra__row .ta { min-height: 36px; font-size: 10.5px; }
 .ra__row .dt { width: 100%; }
 
 .ra__row--overdue .ra__label { color: var(--red); }
@@ -355,10 +356,12 @@
   border: 1px solid var(--line);
   border-left: 3px solid var(--lilac);
   border-radius: var(--radius);
-  background: #fff;
+  background: transparent;
 }
-.tk__item--overdue { border-left-color: var(--red);   background: var(--red-pale); }
-.tk__item--today   { border-left-color: #d68b00;      background: var(--amber-pale); }
+/* Urgency is carried by the left accent and the due-date text alone — filled
+   backgrounds made the column shout over the rest of the board. */
+.tk__item--overdue { border-left-color: var(--red); }
+.tk__item--today   { border-left-color: #d68b00; }
 
 .tk__check {
   appearance: none;
@@ -413,7 +416,7 @@
 }
 .tk__add input[type="text"] {
   font: inherit;
-  font-size: 11.5px;
+  font-size: 10.5px;
   padding: 4px 7px;
   border: 1px solid var(--line);
   border-radius: 5px;
