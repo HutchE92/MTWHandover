@@ -304,6 +304,11 @@
 .nf__cell { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .nf__cell--inline { flex-direction: row; align-items: center; gap: 4px; }
 
+/* The toggle is a flex item in a column cell, so it would otherwise stretch to
+   the full cell width and show empty bordered white space beside "Yes / No".
+   Date inputs are deliberately left to fill their cell. */
+.nf__cell > .yn { align-self: start; }
+
 .nf__label,
 .nf__head,
 .nf__mini {
