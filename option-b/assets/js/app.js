@@ -146,13 +146,16 @@
       } catch (_) {
         /* Corrupt or unavailable storage — fall back to seed data. */
       }
-      if (saved && saved.notes) this.data = saved;
+      /* Re-seed when the demo content has moved on, otherwise saved entries
+         would mask every later edit to data.js. */
+      const stale = saved && saved.seedVersion !== CFG.seedVersion;
+      if (saved && saved.notes && !stale) this.data = saved;
       else { this.seed(); this.save(); }
       return this.data;
     },
 
     seed() {
-      const d = { notes: {}, edd: {}, audit: {}, user: CFG.users[0] };
+      const d = { notes: {}, edd: {}, audit: {}, user: CFG.users[0], seedVersion: CFG.seedVersion };
 
       for (const p of PATIENTS) {
         const s = p.seed || {};
