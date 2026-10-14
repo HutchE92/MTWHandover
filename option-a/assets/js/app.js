@@ -109,13 +109,19 @@
       } catch (_) {
         /* Corrupt or unavailable storage — fall back to seed data. */
       }
-      if (saved && saved.notes) this.data = saved;
+      /* Re-seed when the demo content has moved on, otherwise saved entries
+         would mask every later edit to data.js. */
+      const stale = saved && saved.seedVersion !== CFG.seedVersion;
+      if (saved && saved.notes && !stale) this.data = saved;
       else { this.seed(); this.save(); }
       return this.data;
     },
 
     seed() {
-      const d = { notes: {}, risk: {}, edd: {}, tasks: {}, audit: {}, user: CFG.users[0] };
+      const d = {
+        notes: {}, risk: {}, edd: {}, tasks: {}, audit: {},
+        user: CFG.users[0], seedVersion: CFG.seedVersion,
+      };
 
       for (const p of PATIENTS) {
         const s = p.seed || {};
@@ -263,7 +269,14 @@
   /** Grow a textarea to fit its content, so no clinical detail is hidden. */
   function autosize(ta) {
     ta.style.height = 'auto';
-    ta.style.height = ta.scrollHeight + 'px';
+    /* An empty box is sized by its placeholder, which can wrap to several
+       lines and inflate the row for no reason. Leave it at its CSS minimum. */
+    if (!ta.value) { ta.style.height = ''; return; }
+    /* scrollHeight covers content and padding but not borders, while these
+       boxes are border-box — so assigning scrollHeight alone leaves the last
+       line clipped by the border width. Measure that difference and add it. */
+    const chrome = ta.offsetHeight - ta.clientHeight;
+    ta.style.height = ta.scrollHeight + chrome + 'px';
   }
 
   function autosizeAll(root = document) {

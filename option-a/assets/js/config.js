@@ -4,6 +4,13 @@ window.HV_CONFIG = {
      previously saved demo state. */
   storageKey: 'mtw-handover-poc-v2',
 
+  /* Saved entries take precedence over the seed data, so edits to data.js
+     would otherwise be invisible to anyone who has already opened the page.
+     Bump this whenever the seed content changes and those browsers will
+     re-seed on their next load. Local edits are discarded when it changes,
+     which is the right trade for demo content. */
+  seedVersion: 1,
+
   /* Work-area insets as percentages of the background image. Kept here as well
      as in shell.css so the Shift+A alignment overlay can report them. */
   region: { left: 0.70, top: 23.18, right: 0.90, bottom: 6.49 },
